@@ -14,6 +14,7 @@ namespace MinecraftClient.ChatBots
         private DateTime LastTime = DateTime.Now;
         private bool Fishing = false;
         private int FishrowEntityId = 0;
+        private int FishNumber = 0;
 
         public AutoFish()
         {
@@ -144,6 +145,7 @@ namespace MinecraftClient.ChatBots
                 if (dX == 0 && dZ == 0 && dY < -800)
                 {
                     UseFishRod();
+                    LogToConsole("You've caught " + ++FishNumber + " fish ");
                 }
             }
 
