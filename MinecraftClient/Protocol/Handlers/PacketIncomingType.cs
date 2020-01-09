@@ -30,6 +30,12 @@ namespace MinecraftClient.Protocol.Handlers
         OpenWindow,
         WindowItems,
         SetSlot,
+        SpawnEntity,
+        EntityTeleport,
+        EntityMoveLook,
+        EntityDestroy,
+        HeldItemSlot,
+        UpdateHealth,
         UnknownPacket
     }
 }

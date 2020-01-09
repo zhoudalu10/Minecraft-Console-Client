@@ -72,19 +72,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoTimeout.cs" />
-    <Compile Include="ChatBots\Alerts.cs" />
-    <Compile Include="ChatBots\AntiAFK.cs" />
-    <Compile Include="ChatBots\AutoRespond.cs" />
-    <Compile Include="ChatBots\AutoRelog.cs" />
-    <Compile Include="ChatBots\ChatLog.cs" />
-    <Compile Include="ChatBots\HangmanGame.cs" />
-    <Compile Include="ChatBots\PlayerListLogger.cs" />
-    <Compile Include="ChatBots\RemoteControl.cs" />
-    <Compile Include="ChatBots\Script.cs" />
-    <Compile Include="ChatBots\ScriptScheduler.cs" />
-    <Compile Include="ChatBots\TestBot.cs" />
-    <Compile Include="ChatBot.cs" />
+    <Compile Include="AutoTimeout.cs"/>
+    <Compile Include="ChatBots\Alerts.cs"/>
+    <Compile Include="ChatBots\AntiAFK.cs"/>
+    <Compile Include="ChatBots\AutoFish.cs"/>
+    <Compile Include="ChatBots\AutoRelogin.cs"/>
+    <Compile Include="ChatBots\AutoRespawn.cs"/>
+    <Compile Include="ChatBots\AutoRespond.cs"/>
+    <Compile Include="ChatBots\AutoRelog.cs"/>
+    <Compile Include="ChatBots\ChatLog.cs"/>
+    <Compile Include="ChatBots\HangmanGame.cs"/>
+    <Compile Include="ChatBots\PlayerListLogger.cs"/>
+    <Compile Include="ChatBots\RemoteControl.cs"/>
+    <Compile Include="ChatBots\Script.cs"/>
+    <Compile Include="ChatBots\ScriptScheduler.cs"/>
+    <Compile Include="ChatBots\TestBot.cs"/>
+    <Compile Include="ChatBot.cs"/>
     <Compile Include="Command.cs" />
     <Compile Include="Commands\Connect.cs" />
     <Compile Include="Commands\Debug.cs" />

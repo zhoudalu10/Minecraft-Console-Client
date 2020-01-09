@@ -142,8 +142,19 @@ namespace MinecraftClient.Protocol.Handlers
                     case 0x37: return PacketIncomingType.ResourcePackSend;
                     case 0x13: return PacketIncomingType.CloseWindow;
                     case 0x14: return PacketIncomingType.OpenWindow;
+
+                    //add entity pack
+                    case 0x00: return PacketIncomingType.SpawnEntity;
+                    case 0x29: return PacketIncomingType.EntityMoveLook;
+                    case 0x35: return PacketIncomingType.EntityDestroy;
+                    case 0x50: return PacketIncomingType.EntityTeleport;
+                    //add item pack
                     case 0x15: return PacketIncomingType.WindowItems;
                     case 0x17: return PacketIncomingType.SetSlot;
+                    case 0x3d: return PacketIncomingType.HeldItemSlot;
+                    //add health
+                    case 0x44: return PacketIncomingType.UpdateHealth;
+
                     default: return PacketIncomingType.UnknownPacket;
                 }
             }
@@ -167,8 +178,17 @@ namespace MinecraftClient.Protocol.Handlers
                     case 0x39: return PacketIncomingType.ResourcePackSend;
                     case 0x2E: return PacketIncomingType.OpenWindow;
                     case 0x13: return PacketIncomingType.CloseWindow;
+
+                    case 0x00: return PacketIncomingType.SpawnEntity;
+                    case 0x29: return PacketIncomingType.EntityMoveLook;
+                    case 0x37: return PacketIncomingType.EntityDestroy;
+                    case 0x56: return PacketIncomingType.EntityTeleport;
                     case 0x14: return PacketIncomingType.WindowItems;
                     case 0x16: return PacketIncomingType.SetSlot;
+                    case 0x3f: return PacketIncomingType.HeldItemSlot;
+                    case 0x48: return PacketIncomingType.UpdateHealth;
+
+
                     default: return PacketIncomingType.UnknownPacket;
                 }
             }
@@ -192,8 +212,18 @@ namespace MinecraftClient.Protocol.Handlers
                     case 0x3A: return PacketIncomingType.ResourcePackSend;
                     case 0x2F: return PacketIncomingType.OpenWindow;
                     case 0x14: return PacketIncomingType.CloseWindow;
+
+
+                    case 0x00: return PacketIncomingType.SpawnEntity;
+                    case 0x2a: return PacketIncomingType.EntityMoveLook;
+                    case 0x38: return PacketIncomingType.EntityDestroy;
+                    case 0x57: return PacketIncomingType.EntityTeleport;
                     case 0x15: return PacketIncomingType.WindowItems;
                     case 0x17: return PacketIncomingType.SetSlot;
+                    case 0x40: return PacketIncomingType.HeldItemSlot;
+                    case 0x49: return PacketIncomingType.UpdateHealth;
+
+
                     default: return PacketIncomingType.UnknownPacket;
                 }
             }
@@ -220,7 +250,9 @@ namespace MinecraftClient.Protocol.Handlers
                     case PacketOutgoingType.TabComplete: return 0x14;
                     case PacketOutgoingType.PlayerPosition: return 0x04;
                     case PacketOutgoingType.PlayerPositionAndLook: return 0x06;
-                    case PacketOutgoingType.TeleportConfirm: throw new InvalidOperationException("Teleport confirm is not supported in protocol " + protocol);
+                    case PacketOutgoingType.TeleportConfirm:
+                        throw new InvalidOperationException("Teleport confirm is not supported in protocol " +
+                                                            protocol);
                 }
             }
             else if (protocol <= Protocol18Handler.MC1112Version) // MC 1.9, 1,10 and 1.11
@@ -285,6 +317,8 @@ namespace MinecraftClient.Protocol.Handlers
                     case PacketOutgoingType.PlayerPosition: return 0x10;
                     case PacketOutgoingType.PlayerPositionAndLook: return 0x11;
                     case PacketOutgoingType.TeleportConfirm: return 0x00;
+                    case PacketOutgoingType.HeldItemSlot: return 0x21;
+                    case PacketOutgoingType.UseItem: return 0x2a;
                 }
             }
             else // MC 1.14 to 1.15
@@ -301,10 +335,13 @@ namespace MinecraftClient.Protocol.Handlers
                     case PacketOutgoingType.PlayerPosition: return 0x11;
                     case PacketOutgoingType.PlayerPositionAndLook: return 0x12;
                     case PacketOutgoingType.TeleportConfirm: return 0x00;
+                    case PacketOutgoingType.HeldItemSlot: return 0x23;
+                    case PacketOutgoingType.UseItem: return 0x2d;
                 }
             }
 
-            throw new System.ComponentModel.InvalidEnumArgumentException("Unknown PacketOutgoingType (protocol=" + protocol + ")", (int)packet, typeof(PacketOutgoingType));
+            throw new System.ComponentModel.InvalidEnumArgumentException(
+                "Unknown PacketOutgoingType (protocol=" + protocol + ")", (int) packet, typeof(PacketOutgoingType));
         }
     }
 }

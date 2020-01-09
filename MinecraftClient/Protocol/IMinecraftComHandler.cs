@@ -11,7 +11,6 @@ namespace MinecraftClient.Protocol
     /// It defines some callbacks that the MinecraftCom handler must have.
     /// It allows the protocol handler to abstract from the other parts of the program.
     /// </summary>
-
     public interface IMinecraftComHandler
     {
         /* The MinecraftCom Handler must
@@ -125,5 +124,17 @@ namespace MinecraftClient.Protocol
         /// <param name="channel">The channel the message was sent on</param>
         /// <param name="data">The data from the channel</param>
         void OnPluginChannelMessage(string channel, byte[] data);
+
+        void OnSpawnEntity(int entityId, short type, Guid UUID, Location location);
+
+        void OnEntityMoveLook(int entityId, short dX, short dY, short dZ);
+
+        void OnEntityDestroy(int[] entitys);
+
+        void OnSetSlot(byte windowId, short slot, short itemId, short itemCount);
+
+        void OnUpdateHealth(float health, int food, float foodSaturation);
+
+        void OnHeldItemSlot(short slot);
     }
 }

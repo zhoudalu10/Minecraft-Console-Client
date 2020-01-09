@@ -13,7 +13,6 @@ namespace MinecraftClient.Protocol
     /// This interface allows to abstract from the underlying minecraft version in other parts of the program.
     /// The protocol handler will take care of parsing and building the appropriate network packets.
     /// </summary>
-
     public interface IMinecraftCom : IDisposable, IAutoComplete
     {
         /// <summary>
@@ -64,7 +63,8 @@ namespace MinecraftClient.Protocol
         /// <param name="skinParts">Show skin layers</param>
         /// <param name="mainHand">1.9+ main hand</param>
         /// <returns>True if client settings were successfully sent</returns>
-        bool SendClientSettings(string language, byte viewDistance, byte difficulty, byte chatMode, bool chatColors, byte skinParts, byte mainHand);
+        bool SendClientSettings(string language, byte viewDistance, byte difficulty, byte chatMode, bool chatColors,
+            byte skinParts, byte mainHand);
 
         /// <summary>
         /// Send a location update telling that we moved to that location
@@ -84,5 +84,11 @@ namespace MinecraftClient.Protocol
         /// <param name="data">packet Data</param>
         /// <returns>True if message was successfully sent</returns>
         bool SendPluginChannelPacket(string channel, byte[] data);
+
+        bool SendHeldItemSlot(short slotId = 0);
+
+        bool SendUseItem(int hand = 0);
+
+        int GetProtocolVersion();
     }
 }

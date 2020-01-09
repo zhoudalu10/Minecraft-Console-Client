@@ -83,6 +83,7 @@ namespace MinecraftClient
                             Console.Write("\b \b");
                             password.Remove(password.Length - 1, 1);
                         }
+
                         break;
 
                     case ConsoleKey.Escape:
@@ -102,6 +103,7 @@ namespace MinecraftClient
                             Console.Write('*');
                             password.Append(k.KeyChar);
                         }
+
                         break;
                 }
             }
@@ -161,10 +163,18 @@ namespace MinecraftClient
                                 GoRight();
                                 break;
                             case ConsoleKey.Home:
-                                while (buffer.Length > 0) { GoLeft(); }
+                                while (buffer.Length > 0)
+                                {
+                                    GoLeft();
+                                }
+
                                 break;
                             case ConsoleKey.End:
-                                while (buffer2.Length > 0) { GoRight(); }
+                                while (buffer2.Length > 0)
+                                {
+                                    GoRight();
+                                }
+
                                 break;
                             case ConsoleKey.Delete:
                                 if (buffer2.Length > 0)
@@ -172,6 +182,7 @@ namespace MinecraftClient
                                     GoRight();
                                     RemoveOneChar();
                                 }
+
                                 break;
                             case ConsoleKey.DownArrow:
                                 if (previous.Count > 0)
@@ -182,6 +193,7 @@ namespace MinecraftClient
                                     previous.RemoveFirst();
                                     Console.Write(buffer);
                                 }
+
                                 break;
                             case ConsoleKey.UpArrow:
                                 if (previous.Count > 0)
@@ -192,6 +204,7 @@ namespace MinecraftClient
                                     previous.RemoveLast();
                                     Console.Write(buffer);
                                 }
+
                                 break;
                             case ConsoleKey.Tab:
                                 if (autocomplete_words.Count == 0 && autocomplete_engine != null && buffer.Length > 0)
@@ -204,11 +217,20 @@ namespace MinecraftClient
                                     autocomplete_words.RemoveFirst();
                                     autocomplete_words.AddLast(word_autocomplete);
                                 }
+
                                 if (!String.IsNullOrEmpty(word_autocomplete) && word_autocomplete != buffer)
                                 {
-                                    while (buffer.Length > 0 && buffer[buffer.Length - 1] != ' ') { RemoveOneChar(); }
-                                    foreach (char c in word_autocomplete) { AddChar(c); }
+                                    while (buffer.Length > 0 && buffer[buffer.Length - 1] != ' ')
+                                    {
+                                        RemoveOneChar();
+                                    }
+
+                                    foreach (char c in word_autocomplete)
+                                    {
+                                        AddChar(c);
+                                    }
                                 }
+
                                 break;
                             default:
                                 if (k.KeyChar != 0)
@@ -216,6 +238,7 @@ namespace MinecraftClient
                                 break;
                         }
                     }
+
                     if (k.Key != ConsoleKey.Tab)
                         autocomplete_words.Clear();
                 }
@@ -267,6 +290,7 @@ namespace MinecraftClient
                                 Console.CursorTop--;
                             }
                             else Console.Write("\b \b");
+
                             Console.Write(text);
                             buffer = buf;
                             buffer2 = buf2;
@@ -274,7 +298,10 @@ namespace MinecraftClient
                             if (buffer2.Length > 0)
                             {
                                 Console.Write(buffer2 + " \b");
-                                for (int i = 0; i < buffer2.Length; i++) { GoBack(); }
+                                for (int i = 0; i < buffer2.Length; i++)
+                                {
+                                    GoBack();
+                                }
                             }
                         }
                         catch (ArgumentOutOfRangeException)
@@ -325,48 +352,88 @@ namespace MinecraftClient
                 {
                     str = str.Replace('\n', ' ');
                 }
+
                 if (displayTimestamp == null)
                 {
                     displayTimestamp = EnableTimestamps;
                 }
+
                 if (displayTimestamp.Value)
                 {
                     int hour = DateTime.Now.Hour, minute = DateTime.Now.Minute, second = DateTime.Now.Second;
-                    ConsoleIO.Write(String.Format("{0}:{1}:{2} ", hour.ToString("00"), minute.ToString("00"), second.ToString("00")));
+                    ConsoleIO.Write(String.Format("{0}:{1}:{2} ", hour.ToString("00"), minute.ToString("00"),
+                        second.ToString("00")));
                 }
+
                 if (BasicIO)
                 {
                     Console.WriteLine(str);
                     return;
                 }
-                string[] parts = str.Split(new char[] { '§' });
+
+                string[] parts = str.Split(new char[] {'§'});
                 if (parts[0].Length > 0)
                 {
                     ConsoleIO.Write(parts[0]);
                 }
+
                 for (int i = 1; i < parts.Length; i++)
                 {
                     if (parts[i].Length > 0)
                     {
                         switch (parts[i][0])
                         {
-                            case '0': Console.ForegroundColor = ConsoleColor.Gray; break; //Should be Black but Black is non-readable on a black background
-                            case '1': Console.ForegroundColor = ConsoleColor.DarkBlue; break;
-                            case '2': Console.ForegroundColor = ConsoleColor.DarkGreen; break;
-                            case '3': Console.ForegroundColor = ConsoleColor.DarkCyan; break;
-                            case '4': Console.ForegroundColor = ConsoleColor.DarkRed; break;
-                            case '5': Console.ForegroundColor = ConsoleColor.DarkMagenta; break;
-                            case '6': Console.ForegroundColor = ConsoleColor.DarkYellow; break;
-                            case '7': Console.ForegroundColor = ConsoleColor.Gray; break;
-                            case '8': Console.ForegroundColor = ConsoleColor.DarkGray; break;
-                            case '9': Console.ForegroundColor = ConsoleColor.Blue; break;
-                            case 'a': Console.ForegroundColor = ConsoleColor.Green; break;
-                            case 'b': Console.ForegroundColor = ConsoleColor.Cyan; break;
-                            case 'c': Console.ForegroundColor = ConsoleColor.Red; break;
-                            case 'd': Console.ForegroundColor = ConsoleColor.Magenta; break;
-                            case 'e': Console.ForegroundColor = ConsoleColor.Yellow; break;
-                            case 'f': Console.ForegroundColor = ConsoleColor.White; break;
-                            case 'r': Console.ForegroundColor = ConsoleColor.Gray; break;
+                            case '0':
+                                Console.ForegroundColor = ConsoleColor.Gray;
+                                break; //Should be Black but Black is non-readable on a black background
+                            case '1':
+                                Console.ForegroundColor = ConsoleColor.DarkBlue;
+                                break;
+                            case '2':
+                                Console.ForegroundColor = ConsoleColor.DarkGreen;
+                                break;
+                            case '3':
+                                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                                break;
+                            case '4':
+                                Console.ForegroundColor = ConsoleColor.DarkRed;
+                                break;
+                            case '5':
+                                Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                                break;
+                            case '6':
+                                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                                break;
+                            case '7':
+                                Console.ForegroundColor = ConsoleColor.Gray;
+                                break;
+                            case '8':
+                                Console.ForegroundColor = ConsoleColor.DarkGray;
+                                break;
+                            case '9':
+                                Console.ForegroundColor = ConsoleColor.Blue;
+                                break;
+                            case 'a':
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                break;
+                            case 'b':
+                                Console.ForegroundColor = ConsoleColor.Cyan;
+                                break;
+                            case 'c':
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                break;
+                            case 'd':
+                                Console.ForegroundColor = ConsoleColor.Magenta;
+                                break;
+                            case 'e':
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                break;
+                            case 'f':
+                                Console.ForegroundColor = ConsoleColor.White;
+                                break;
+                            case 'r':
+                                Console.ForegroundColor = ConsoleColor.Gray;
+                                break;
                         }
 
                         if (parts[i].Length > 1)
@@ -375,8 +442,10 @@ namespace MinecraftClient
                         }
                     }
                 }
+
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
+
             ConsoleIO.Write('\n');
         }
 
@@ -400,6 +469,7 @@ namespace MinecraftClient
             {
                 GoRight();
             }
+
             while (buffer.Length > 0)
             {
                 RemoveOneChar();
@@ -425,9 +495,21 @@ namespace MinecraftClient
                         if (Console.CursorTop > 0)
                             Console.CursorTop--;
                     }
-                    else Console.Write("\b \b");
+                    else
+                    {
+                        String right = buffer.Substring(buffer.Length - 1, 1);
+                        int count = System.Text.Encoding.Default.GetByteCount(right);
+                        for (int i = 0; i < count; i++)
+                        {
+                            Console.Write("\b \b");
+                        }
+                    }
                 }
-                catch (ArgumentOutOfRangeException) { /* Console was resized!? */ }
+                catch (ArgumentOutOfRangeException)
+                {
+                    /* Console was resized!? */
+                }
+
                 buffer = buffer.Substring(0, buffer.Length - 1);
 
                 if (buffer2.Length > 0)
@@ -456,7 +538,10 @@ namespace MinecraftClient
                 }
                 else Console.Write('\b');
             }
-            catch (ArgumentOutOfRangeException) { /* Console was resized!? */ }
+            catch (ArgumentOutOfRangeException)
+            {
+                /* Console was resized!? */
+            }
         }
 
         /// <summary>
@@ -518,7 +603,9 @@ namespace MinecraftClient
                     {
                         clipdata = Clipboard.GetText();
                     }
-                    catch { }
+                    catch
+                    {
+                    }
                 }
             ));
             staThread.SetApartmentState(ApartmentState.STA);

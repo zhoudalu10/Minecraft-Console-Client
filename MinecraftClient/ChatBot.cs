@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Threading;
 using System.Text.RegularExpressions;
+using MinecraftClient.Mapping;
 
 namespace MinecraftClient
 {
@@ -21,23 +22,42 @@ namespace MinecraftClient
     /// This way it can be loaded in newer MCC builds, without modifying MCC itself.
     /// See config/sample-script-with-chatbot.cs for a ChatBot script example.
     ///
-
     /// <summary>
     /// The virtual class containing anything you need for creating chat bots.
     /// </summary>
     public abstract class ChatBot
     {
-        public enum DisconnectReason { InGameKick, LoginRejected, ConnectionLost, UserLogout };
+        public enum DisconnectReason
+        {
+            InGameKick,
+            LoginRejected,
+            ConnectionLost,
+            UserLogout
+        };
 
         //Handler will be automatically set on bot loading, don't worry about this
-        public void SetHandler(McTcpClient handler) { this._handler = handler; }
-        protected void SetMaster(ChatBot master) { this.master = master; }
-        protected void LoadBot(ChatBot bot) { Handler.BotUnLoad(bot); Handler.BotLoad(bot); }
+        public void SetHandler(McTcpClient handler)
+        {
+            this._handler = handler;
+        }
+
+        protected void SetMaster(ChatBot master)
+        {
+            this.master = master;
+        }
+
+        protected void LoadBot(ChatBot bot)
+        {
+            Handler.BotUnLoad(bot);
+            Handler.BotLoad(bot);
+        }
+
         private McTcpClient _handler = null;
         private ChatBot master = null;
         private List<string> registeredPluginChannels = new List<String>();
         private Queue<string> chatQueue = new Queue<string>();
         private DateTime lastMessageSentTime = DateTime.MinValue;
+
         private McTcpClient Handler
         {
             get
@@ -51,12 +71,10 @@ namespace MinecraftClient
                     + " Override Initialize() or AfterGameJoined() instead to perform initialization tasks.");
             }
         }
+
         private bool MessageCooldownEnded
         {
-            get
-            {
-                return DateTime.Now > lastMessageSentTime + Settings.botMessageDelay;
-            }
+            get { return DateTime.Now > lastMessageSentTime + Settings.botMessageDelay; }
         }
 
         /// <summary>
@@ -87,7 +105,9 @@ namespace MinecraftClient
         /// NOTE: Chat messages cannot be sent at this point in the login process.
         /// If you want to send a message when the bot is loaded, use AfterGameJoined.
         /// </summary>
-        public virtual void Initialize() { }
+        public virtual void Initialize()
+        {
+        }
 
         /// <summary>
         /// Called after the server has been joined successfully and chat messages are able to be sent.
@@ -96,18 +116,24 @@ namespace MinecraftClient
         /// NOTE: This is not always right after joining the server - if the bot was loaded after logging
         /// in this is still called.
         /// </summary>
-        public virtual void AfterGameJoined() { }
+        public virtual void AfterGameJoined()
+        {
+        }
 
         /// <summary>
         /// Will be called every ~100ms (10fps) if loaded in MinecraftCom
         /// </summary>
-        public virtual void Update() { }
+        public virtual void Update()
+        {
+        }
 
         /// <summary>
         /// Any text sent by the server will be sent here by MinecraftCom
         /// </summary>
         /// <param name="text">Text from the server</param>
-        public virtual void GetText(string text) { }
+        public virtual void GetText(string text)
+        {
+        }
 
         /// <summary>
         /// Any text sent by the server will be sent here by MinecraftCom (extended variant)
@@ -117,7 +143,9 @@ namespace MinecraftClient
         /// </remarks>
         /// <param name="text">Text from the server</param>
         /// <param name="json">Raw JSON from the server. This parameter will be NULL on MC 1.5 or lower!</param>
-        public virtual void GetText(string text, string json) { }
+        public virtual void GetText(string text, string json)
+        {
+        }
 
         /// <summary>
         /// Is called when the client has been disconnected fom the server
@@ -125,7 +153,10 @@ namespace MinecraftClient
         /// <param name="reason">Disconnect Reason</param>
         /// <param name="message">Kick message, if any</param>
         /// <returns>Return TRUE if the client is about to restart</returns>
-        public virtual bool OnDisconnect(DisconnectReason reason, string message) { return false; }
+        public virtual bool OnDisconnect(DisconnectReason reason, string message)
+        {
+            return false;
+        }
 
         /// <summary>
         /// Called when a plugin channel message is received.
@@ -135,7 +166,9 @@ namespace MinecraftClient
         /// </summary>
         /// <param name="channel">The name of the channel</param>
         /// <param name="data">The payload for the message</param>
-        public virtual void OnPluginMessage(string channel, byte[] data) { }
+        public virtual void OnPluginMessage(string channel, byte[] data)
+        {
+        }
 
         /* =================================================================== */
         /*  ToolBox - Methods below might be useful while creating your bot.   */
@@ -194,14 +227,14 @@ namespace MinecraftClient
         /// </summary>
         protected static string GetVerbatim(string text)
         {
-            if ( String.IsNullOrEmpty(text) )
+            if (String.IsNullOrEmpty(text))
                 return String.Empty;
 
             int idx = 0;
             var data = new char[text.Length];
 
-            for ( int i = 0; i < text.Length; i++ )
-                if ( text[i] != '§' )
+            for (int i = 0; i < text.Length; i++)
+                if (text[i] != '§')
                     data[idx++] = text[i];
                 else
                     i++;
@@ -219,9 +252,9 @@ namespace MinecraftClient
 
             foreach (char c in username)
                 if (!((c >= 'a' && c <= 'z')
-                        || (c >= 'A' && c <= 'Z')
-                        || (c >= '0' && c <= '9')
-                        || c == '_') )
+                      || (c >= 'A' && c <= 'Z')
+                      || (c >= '0' && c <= '9')
+                      || c == '_'))
                     return false;
 
             return true;
@@ -269,6 +302,7 @@ namespace MinecraftClient
                             message = text.Substring(tmp[0].Length + 18); //MC 1.7
                         }
                         else message = text.Substring(tmp[0].Length + 10); //MC 1.5
+
                         sender = tmp[0];
                         return IsValidName(sender);
                     }
@@ -277,22 +311,32 @@ namespace MinecraftClient
                     //[Someone -> me] message
                     //[~Someone -> me] message
                     else if (text[0] == '[' && tmp.Length > 3 && tmp[1] == "->"
-                            && (tmp[2].ToLower() == "me]" || tmp[2].ToLower() == "moi]")) //'me' is replaced by 'moi' in french servers
+                             && (tmp[2].ToLower() == "me]" || tmp[2].ToLower() == "moi]")
+                    ) //'me' is replaced by 'moi' in french servers
                     {
                         message = text.Substring(tmp[0].Length + 4 + tmp[2].Length + 1);
                         sender = tmp[0].Substring(1);
-                        if (sender[0] == '~') { sender = sender.Substring(1); }
+                        if (sender[0] == '~')
+                        {
+                            sender = sender.Substring(1);
+                        }
+
                         return IsValidName(sender);
                     }
 
                     //Detect Modified server messages. /m
                     //[Someone @ me] message
                     else if (text[0] == '[' && tmp.Length > 3 && tmp[1] == "@"
-                            && (tmp[2].ToLower() == "me]" || tmp[2].ToLower() == "moi]")) //'me' is replaced by 'moi' in french servers
+                             && (tmp[2].ToLower() == "me]" || tmp[2].ToLower() == "moi]")
+                    ) //'me' is replaced by 'moi' in french servers
                     {
                         message = text.Substring(tmp[0].Length + 4 + tmp[2].Length + 0);
                         sender = tmp[0].Substring(1);
-                        if (sender[0] == '~') { sender = sender.Substring(1); }
+                        if (sender[0] == '~')
+                        {
+                            sender = sender.Substring(1);
+                        }
+
                         return IsValidName(sender);
                     }
 
@@ -300,12 +344,16 @@ namespace MinecraftClient
                     //[Prefix] [Someone -> me] message
                     //[Prefix] [~Someone -> me] message
                     else if (text[0] == '[' && tmp[0][tmp[0].Length - 1] == ']'
-                            && tmp[1][0] == '[' && tmp.Length > 4 && tmp[2] == "->"
-                            && (tmp[3].ToLower() == "me]" || tmp[3].ToLower() == "moi]"))
+                                            && tmp[1][0] == '[' && tmp.Length > 4 && tmp[2] == "->"
+                                            && (tmp[3].ToLower() == "me]" || tmp[3].ToLower() == "moi]"))
                     {
                         message = text.Substring(tmp[0].Length + 1 + tmp[1].Length + 4 + tmp[3].Length + 1);
                         sender = tmp[1].Substring(1);
-                        if (sender[0] == '~') { sender = sender.Substring(1); }
+                        if (sender[0] == '~')
+                        {
+                            sender = sender.Substring(1);
+                        }
+
                         return IsValidName(sender);
                     }
 
@@ -313,11 +361,15 @@ namespace MinecraftClient
                     //[Someone [rank] -> me] message
                     //[~Someone [rank] -> me] message
                     else if (text[0] == '[' && tmp.Length > 3 && tmp[2] == "->"
-                            && (tmp[3].ToLower() == "me]" || tmp[3].ToLower() == "moi]"))
+                             && (tmp[3].ToLower() == "me]" || tmp[3].ToLower() == "moi]"))
                     {
                         message = text.Substring(tmp[0].Length + 1 + tmp[1].Length + 4 + tmp[2].Length + 1);
                         sender = tmp[0].Substring(1);
-                        if (sender[0] == '~') { sender = sender.Substring(1); }
+                        if (sender[0] == '~')
+                        {
+                            sender = sender.Substring(1);
+                        }
+
                         return IsValidName(sender);
                     }
 
@@ -331,8 +383,14 @@ namespace MinecraftClient
                     }
                     else return false;
                 }
-                catch (IndexOutOfRangeException) { /* Not an expected chat format */ }
-                catch (ArgumentOutOfRangeException) { /* Same here */ }
+                catch (IndexOutOfRangeException)
+                {
+                    /* Not an expected chat format */
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    /* Same here */
+                }
             }
 
             return false;
@@ -383,14 +441,27 @@ namespace MinecraftClient
                         sender = tmp2[0];
                         message = text.Substring(sender.Length + 2);
                         if (message.Length > 1 && message[0] == ' ')
-                        { message = message.Substring(1); }
+                        {
+                            message = message.Substring(1);
+                        }
+
                         tmp2 = sender.Split(' ');
                         sender = tmp2[tmp2.Length - 1];
-                        if (sender[0] == '~') { sender = sender.Substring(1); }
+                        if (sender[0] == '~')
+                        {
+                            sender = sender.Substring(1);
+                        }
+
                         return IsValidName(sender);
                     }
-                    catch (IndexOutOfRangeException) { /* Not a vanilla/faction message */ }
-                    catch (ArgumentOutOfRangeException) { /* Same here */ }
+                    catch (IndexOutOfRangeException)
+                    {
+                        /* Not a vanilla/faction message */
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        /* Same here */
+                    }
                 }
 
                 //Detect HeroChat Messages
@@ -406,36 +477,48 @@ namespace MinecraftClient
                         message = text.Substring(name_end + 2);
                         return IsValidName(sender);
                     }
-                    catch (IndexOutOfRangeException) { /* Not a herochat message */ }
-                    catch (ArgumentOutOfRangeException) { /* Same here */ }
+                    catch (IndexOutOfRangeException)
+                    {
+                        /* Not a herochat message */
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        /* Same here */
+                    }
                 }
 
                 //Detect (Unknown Plugin) Messages
                 //**Faction<Rank> User : Message
                 else if (text[0] == '*'
-                    && text.Length > 1
-                    && text[1] != ' '
-                    && text.Contains('<') && text.Contains('>')
-                    && text.Contains(' ') && text.Contains(':')
-                    && text.IndexOf('*') < text.IndexOf('<')
-                    && text.IndexOf('<') < text.IndexOf('>')
-                    && text.IndexOf('>') < text.IndexOf(' ')
-                    && text.IndexOf(' ') < text.IndexOf(':'))
+                         && text.Length > 1
+                         && text[1] != ' '
+                         && text.Contains('<') && text.Contains('>')
+                         && text.Contains(' ') && text.Contains(':')
+                         && text.IndexOf('*') < text.IndexOf('<')
+                         && text.IndexOf('<') < text.IndexOf('>')
+                         && text.IndexOf('>') < text.IndexOf(' ')
+                         && text.IndexOf(' ') < text.IndexOf(':'))
                 {
                     try
                     {
                         string prefix = tmp[0];
                         string user = tmp[1];
                         string semicolon = tmp[2];
-                        if (prefix.All(c => char.IsLetterOrDigit(c) || new char[] { '*', '<', '>', '_' }.Contains(c))
+                        if (prefix.All(c => char.IsLetterOrDigit(c) || new char[] {'*', '<', '>', '_'}.Contains(c))
                             && semicolon == ":")
                         {
                             message = text.Substring(prefix.Length + user.Length + 4);
                             return IsValidName(user);
                         }
                     }
-                    catch (IndexOutOfRangeException) { /* Not a <unknown plugin> message */ }
-                    catch (ArgumentOutOfRangeException) { /* Same here */ }
+                    catch (IndexOutOfRangeException)
+                    {
+                        /* Not a <unknown plugin> message */
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        /* Same here */
+                    }
                 }
             }
 
@@ -479,7 +562,7 @@ namespace MinecraftClient
                     //<Rank> Username has requested...
                     //[Rank] Username has requested...
                     if (((tmp[0].StartsWith("<") && tmp[0].EndsWith(">"))
-                        || (tmp[0].StartsWith("[") && tmp[0].EndsWith("]")))
+                         || (tmp[0].StartsWith("[") && tmp[0].EndsWith("]")))
                         && tmp.Length > 1)
                         sender = tmp[1];
 
@@ -511,13 +594,26 @@ namespace MinecraftClient
             {
                 if (!File.Exists(logfile))
                 {
-                    try { Directory.CreateDirectory(Path.GetDirectoryName(logfile)); }
-                    catch { return; /* Invalid path or access denied */ }
-                    try { File.WriteAllText(logfile, ""); }
-                    catch { return; /* Invalid file name or access denied */ }
+                    try
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(logfile));
+                    }
+                    catch
+                    {
+                        return; /* Invalid path or access denied */
+                    }
+
+                    try
+                    {
+                        File.WriteAllText(logfile, "");
+                    }
+                    catch
+                    {
+                        return; /* Invalid file name or access denied */
+                    }
                 }
 
-                File.AppendAllLines(logfile, new string[] { GetTimestamp() + ' ' + text });
+                File.AppendAllLines(logfile, new string[] {GetTimestamp() + ' ' + text});
             }
         }
 
@@ -657,9 +753,9 @@ namespace MinecraftClient
                 //Read all lines from file, remove lines with no text, convert to lowercase,
                 //remove duplicate entries, convert to a string array, and return the result.
                 return File.ReadAllLines(file)
-                        .Where(line => !String.IsNullOrWhiteSpace(line))
-                        .Select(line => line.ToLower())
-                        .Distinct().ToArray();
+                    .Where(line => !String.IsNullOrWhiteSpace(line))
+                    .Select(line => line.ToLower())
+                    .Distinct().ToArray();
             }
             else
             {
@@ -762,7 +858,52 @@ namespace MinecraftClient
                     return false;
                 }
             }
+
             return Handler.SendPluginChannelMessage(channel, data, sendEvenIfNotRegistered);
+        }
+
+        public virtual void OnSpawnEntity(int entityId, short type, Guid UUID, Location location)
+        {
+        }
+
+        public virtual void OnEntityMoveLook(int entityId, short dX, short dY, short dZ)
+        {
+        }
+
+        public virtual void OnEntityDestroy(int[] entitys)
+        {
+        }
+
+        public virtual void OnSetSlot(byte windowId, short slot, short itemId, short itemCount)
+        {
+        }
+
+        public virtual void OnUpdateHealth(float health, int food, float foodSaturation)
+        {
+        }
+
+        public virtual void OnHeldItemSlot(short slot)
+        {
+        }
+
+        protected bool HeldItemSlot(short slotId = 0)
+        {
+            return Handler.SendHeldItemSlot(slotId);
+        }
+
+        protected bool UseItem(int hand = 0)
+        {
+            return Handler.SendUseItem(hand);
+        }
+
+        protected bool SendRespawnPacket()
+        {
+            return Handler.SendRespawnPacket();
+        }
+
+        protected int GetProtocolVersion()
+        {
+            return Handler.GetProtocolVersion();
         }
     }
 }
