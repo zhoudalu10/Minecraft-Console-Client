@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace MinecraftClient.ChatBots
 {
@@ -28,6 +29,9 @@ namespace MinecraftClient.ChatBots
 
         public override void AfterGameJoined()
         {
+            LogToConsole("Process will run in 10 seconds...");
+            Thread.Sleep(10000);
+            LogToConsole("Process start.");
             ProtocolVersion = GetProtocolVersion();
             base.AfterGameJoined();
         }
