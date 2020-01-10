@@ -16,6 +16,9 @@ namespace MinecraftClient.ChatBots
         private bool Fishing = false;
         private int FishrowEntityId = 0;
         private int FishNumber = 0;
+        private int FishRodId;
+        private int EntityTypeId;
+        private bool CanFishFlag;
 
         public AutoFish()
         {
@@ -33,6 +36,9 @@ namespace MinecraftClient.ChatBots
             Thread.Sleep(10000);
             LogToConsole("Process start.");
             ProtocolVersion = GetProtocolVersion();
+            CanFishFlag = GetVersionFlag();
+            FishRodId = GetFishRodId();
+            EntityTypeId = GetEntityTypeId();
             base.AfterGameJoined();
         }
 
@@ -81,46 +87,15 @@ namespace MinecraftClient.ChatBots
 
         public override void OnSpawnEntity(int entityId, short type, Guid UUID, Mapping.Location location)
         {
-            switch (ProtocolVersion)
+            if (type == EntityTypeId)
             {
-                case 404:
-                    if (type == 90)
-                    {
-                        TimeSpan interval = DateTime.Now - LastTime;
-                        if (interval.TotalMilliseconds <= 500)
-                        {
-                            FishrowEntityId = entityId;
-                            Fishing = true;
-                        }
-                    }
-
-                    break;
-                case 498:
-                    if (type == 101)
-                    {
-                        TimeSpan interval = DateTime.Now - LastTime;
-                        if (interval.TotalMilliseconds <= 500)
-                        {
-                            FishrowEntityId = entityId;
-                            Fishing = true;
-                        }
-                    }
-
-                    break;
-                case 575:
-                    if (type == 102)
-                    {
-                        TimeSpan interval = DateTime.Now - LastTime;
-                        if (interval.TotalMilliseconds <= 500)
-                        {
-                            FishrowEntityId = entityId;
-                            Fishing = true;
-                        }
-                    }
-
-                    break;
+                TimeSpan interval = DateTime.Now - LastTime;
+                if (interval.TotalMilliseconds <= 500)
+                {
+                    FishrowEntityId = entityId;
+                    Fishing = true;
+                }
             }
-
 
             base.OnSpawnEntity(entityId, type, UUID, location);
         }
@@ -149,7 +124,7 @@ namespace MinecraftClient.ChatBots
                 if (dX == 0 && dZ == 0 && dY < -800)
                 {
                     UseFishRod();
-                    LogToConsole("You've caught " + ++FishNumber + " fish ");
+                    LogToConsole("You've caught " + ++FishNumber + " fish.");
                 }
             }
 
@@ -166,14 +141,9 @@ namespace MinecraftClient.ChatBots
         private bool CanFish()
         {
             if (Slot < 0 || Slot > 8) return false;
-            if (ProtocolVersion == 404)
+            if (CanFishFlag)
             {
-                return QuickBarItem[Slot] == 568;
-            }
-
-            if (ProtocolVersion == 498 || ProtocolVersion == 575)
-            {
-                return QuickBarItem[Slot] == 622;
+                return QuickBarItem[Slot] == FishRodId;
             }
 
             return false;
@@ -182,32 +152,63 @@ namespace MinecraftClient.ChatBots
         private void AutoSwitchToFishRod()
         {
             if (Slot < 0 || Slot > 8) return;
-            if (ProtocolVersion == 404)
+            if (CanFishFlag)
             {
-                if (QuickBarItem[Slot] != 568)
+                if (QuickBarItem[Slot] != FishRodId)
                 {
                     for (short i = 0; i < QuickBarItem.Length; i++)
                     {
-                        if (QuickBarItem[i] == 568)
+                        if (QuickBarItem[i] == FishRodId)
                         {
                             HeldItemSlot(i);
                         }
                     }
                 }
             }
+        }
 
-            if (ProtocolVersion == 498 || ProtocolVersion == 575)
+        private int GetFishRodId()
+        {
+            switch (ProtocolVersion)
             {
-                if (QuickBarItem[Slot] != 622)
-                {
-                    for (short i = 0; i < QuickBarItem.Length; i++)
-                    {
-                        if (QuickBarItem[i] == 622)
-                        {
-                            HeldItemSlot(i);
-                        }
-                    }
-                }
+                case 404:
+                    return 568;
+                case 498:
+                    return 622;
+                case 575:
+                    return 622;
+                default:
+                    return 0;
+            }
+        }
+
+        private int GetEntityTypeId()
+        {
+            switch (ProtocolVersion)
+            {
+                case 404:
+                    return 90;
+                case 498:
+                    return 101;
+                case 575:
+                    return 102;
+                default:
+                    return 0;
+            }
+        }
+
+        private bool GetVersionFlag()
+        {
+            switch (ProtocolVersion)
+            {
+                case 404:
+                    return true;
+                case 498:
+                    return true;
+                case 575:
+                    return true;
+                default:
+                    return false;
             }
         }
     }
