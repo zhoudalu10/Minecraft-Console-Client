@@ -32,9 +32,6 @@ namespace MinecraftClient.ChatBots
 
         public override void AfterGameJoined()
         {
-            LogToConsole("Process will run in 10 seconds...");
-            Thread.Sleep(10000);
-            LogToConsole("Process start.");
             ProtocolVersion = GetProtocolVersion();
             CanFishFlag = GetVersionFlag();
             FishRodId = GetFishRodId();

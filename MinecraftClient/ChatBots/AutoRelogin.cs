@@ -18,7 +18,7 @@ namespace MinecraftClient.ChatBots
             Timer.Interval = Settings.AutoRelogin_Delay * 1000;
             Timer.AutoReset = true;
             Timer.Elapsed += new System.Timers.ElapsedEventHandler(TimerHandler);
-            LogToConsole("This is open and load.");
+            LogToConsole("AutoRelogin is open and load.");
         }
 
         public override void Initialize()
@@ -39,7 +39,7 @@ namespace MinecraftClient.ChatBots
                 TryCount = 0;
                 Timer.Enabled = true;
                 Timer.Start();
-                LogToConsole("This is run, Please wait " + Settings.AutoRelogin_Delay + "s.");
+                LogToConsole("AutoRelogin is run, Please wait " + Settings.AutoRelogin_Delay + "s.");
             }
 
             return base.OnDisconnect(reason, message);
