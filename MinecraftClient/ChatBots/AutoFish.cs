@@ -41,6 +41,7 @@ namespace MinecraftClient.ChatBots
                 SendText(Settings.AutoFish_Command);
             }
 
+            Fishing = false;
             base.AfterGameJoined();
         }
 
