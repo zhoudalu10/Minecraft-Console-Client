@@ -30,6 +30,10 @@ namespace MinecraftClient.ChatBots
             Timer.Enabled = false;
             Timer.Stop();
             Open = true;
+            if (Settings.AutoRelogin_Command.Length > 0)
+            {
+                SendText(Settings.AutoRelogin_Command);
+            }
         }
 
         public override bool OnDisconnect(DisconnectReason reason, string message)

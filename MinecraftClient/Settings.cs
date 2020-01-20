@@ -164,10 +164,14 @@ namespace MinecraftClient
         public static bool AutoRelogin_Enabled = false;
         public static int AutoRelogin_Delay = 30;
         public static int AutoRelogin_Retries = 3;
+        public static string AutoRelogin_Command = "";
 
         public static bool AutoFish_Enabled = false;
         public static int AutoFish_Delay = 1;
         public static int AutoFish_Timeout = 100;
+        public static string AutoFish_Message = "";
+        public static int AutoFish_Amount = 0;
+        public static string AutoFish_Command = "";
 
         //Custom app variables and Minecraft accounts
         private static readonly Dictionary<string, object> AppVars = new Dictionary<string, object>();
@@ -825,6 +829,9 @@ namespace MinecraftClient
                                                 case "retries":
                                                     AutoRelogin_Retries = str2int(argValue);
                                                     break;
+                                                case "command":
+                                                    AutoRelogin_Command = argValue;
+                                                    break;
                                             }
 
                                             break;
@@ -839,6 +846,15 @@ namespace MinecraftClient
                                                     break;
                                                 case "timeout":
                                                     AutoFish_Timeout = str2int(argValue);
+                                                    break;
+                                                case "message":
+                                                    AutoFish_Message = argValue;
+                                                    break;
+                                                case "amount":
+                                                    AutoFish_Amount = str2int(argValue);
+                                                    break;
+                                                case "command":
+                                                    AutoFish_Command = argValue;
                                                     break;
                                             }
 
@@ -1030,11 +1046,16 @@ namespace MinecraftClient
                                                       + "enabled=" + bool2str(AutoRelogin_Enabled) + "\r\n"
                                                       + "delay=" + AutoRelogin_Delay + "\r\n"
                                                       + "retries=" + AutoRelogin_Retries + "\r\n"
+                                                      + "command=" + AutoRelogin_Command + "\r\n"
                                                       + "\r\n"
                                                       + "[AutoFish]\r\n"
                                                       + "enabled=" + bool2str(AutoFish_Enabled) + "\r\n"
                                                       + "delay=" + AutoFish_Delay + "\r\n"
-                                                      + "timeout=" + AutoFish_Timeout + "\r\n", Encoding.UTF8);
+                                                      + "timeout=" + AutoFish_Timeout + "\r\n"
+                                                      + "message=" + AutoFish_Message + "\r\n"
+                                                      + "amount=" + AutoFish_Amount + "\r\n"
+                                                      + "command=" + AutoFish_Command + "\r\n"
+                , Encoding.UTF8);
         }
 
         public static string internalCmdChar2str()

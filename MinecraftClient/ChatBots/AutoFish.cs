@@ -36,6 +36,11 @@ namespace MinecraftClient.ChatBots
             CanFishFlag = GetVersionFlag();
             FishRodId = GetFishRodId();
             EntityTypeId = GetEntityTypeId();
+            if (Settings.AutoFish_Command.Length > 0)
+            {
+                SendText(Settings.AutoFish_Command);
+            }
+
             base.AfterGameJoined();
         }
 
@@ -82,6 +87,19 @@ namespace MinecraftClient.ChatBots
             base.Update();
         }
 
+        public override void GetText(string text)
+        {
+            if (Settings.AutoFish_Message.Length > 0)
+            {
+                if (text.Contains(Settings.AutoFish_Message))
+                {
+                    Relogin();
+                }
+            }
+
+            base.GetText(text);
+        }
+
         public override void OnSpawnEntity(int entityId, short type, Guid UUID, Mapping.Location location)
         {
             if (type == EntityTypeId)
@@ -122,6 +140,13 @@ namespace MinecraftClient.ChatBots
                 {
                     UseFishRod();
                     LogToConsole("You've caught " + ++FishNumber + " fish.");
+                    if (Settings.AutoFish_Amount > 0)
+                    {
+                        if (FishNumber % Settings.AutoFish_Amount == 0)
+                        {
+                            Relogin();
+                        }
+                    }
                 }
             }
 
@@ -207,6 +232,12 @@ namespace MinecraftClient.ChatBots
                 default:
                     return false;
             }
+        }
+
+        private void Relogin()
+        {
+            LogToConsole("Relogin process is running.");
+            ReconnectToTheServer(1, 0);
         }
     }
 }
