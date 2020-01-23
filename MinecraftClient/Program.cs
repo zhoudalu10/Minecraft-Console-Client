@@ -30,7 +30,7 @@ namespace MinecraftClient
 
         public const string Version = MCHighestVersion;
         public const string MCLowestVersion = "1.4.6";
-        public const string MCHighestVersion = "1.15.1";
+        public const string MCHighestVersion = "1.15.2";
         public static readonly string BuildInfo = null;
 
         private static Thread offlinePrompt = null;
@@ -41,9 +41,9 @@ namespace MinecraftClient
         /// </summary>
         static void Main(string[] args)
         {
-            Console.WriteLine("Console Client for MC {0} to {1} - v{2} - By ORelio & Contributors,Modify By Yexin_",
+            Console.WriteLine("Console Client for MC {0} to {1} - v{2} - By ORelio & Contributors, Modify By Yexin_",
                 MCLowestVersion, MCHighestVersion, Version);
-            Console.WriteLine("Auto fish support v1.13.2,v1.14.4,v1.15.1");
+            Console.WriteLine("Auto fish support v1.13.2, v1.14.4, v1.15.1, v1.15.2");
             //Build information to facilitate processing of bug reports
             if (BuildInfo != null)
             {

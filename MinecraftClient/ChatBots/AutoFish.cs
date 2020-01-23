@@ -34,6 +34,12 @@ namespace MinecraftClient.ChatBots
         {
             ProtocolVersion = GetProtocolVersion();
             CanFishFlag = GetVersionFlag();
+            if (!CanFishFlag)
+            {
+                LogToConsole("AutoFish does not support this version.");
+                UnloadBot();
+            }
+
             FishRodId = GetFishRodId();
             EntityTypeId = GetEntityTypeId();
             if (Settings.AutoFish_Command.Length > 0)
@@ -200,6 +206,8 @@ namespace MinecraftClient.ChatBots
                     return 622;
                 case 575:
                     return 622;
+                case 578:
+                    return 622;
                 default:
                     return 0;
             }
@@ -215,6 +223,8 @@ namespace MinecraftClient.ChatBots
                     return 101;
                 case 575:
                     return 102;
+                case 578:
+                    return 102;
                 default:
                     return 0;
             }
@@ -229,6 +239,8 @@ namespace MinecraftClient.ChatBots
                 case 498:
                     return true;
                 case 575:
+                    return true;
+                case 578:
                     return true;
                 default:
                     return false;
