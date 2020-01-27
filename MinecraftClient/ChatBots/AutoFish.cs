@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using MinecraftClient.Commands;
 
 namespace MinecraftClient.ChatBots
 {
@@ -19,6 +20,7 @@ namespace MinecraftClient.ChatBots
         private int FishRodId;
         private int EntityTypeId;
         private bool CanFishFlag;
+        private int ContinuousUseFishrod = 0;
 
         public AutoFish()
         {
@@ -32,6 +34,7 @@ namespace MinecraftClient.ChatBots
 
         public override void AfterGameJoined()
         {
+            ContinuousUseFishrod = 0;
             ProtocolVersion = GetProtocolVersion();
             CanFishFlag = GetVersionFlag();
             if (!CanFishFlag)
@@ -88,6 +91,11 @@ namespace MinecraftClient.ChatBots
                 if (time >= Settings.AutoFish_Delay && CanFish())
                 {
                     UseFishRod();
+                    ContinuousUseFishrod++;
+                    if (ContinuousUseFishrod > 10)
+                    {
+                        throw new Exception("Server is too busy or there is no water to fish, exit.");
+                    }
                 }
             }
 
@@ -147,6 +155,7 @@ namespace MinecraftClient.ChatBots
                 {
                     UseFishRod();
                     LogToConsole("You've caught " + ++FishNumber + " fish.");
+                    ContinuousUseFishrod = 0;
                     if (Settings.AutoFish_Amount > 0)
                     {
                         if (FishNumber % Settings.AutoFish_Amount == 0)

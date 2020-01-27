@@ -681,6 +681,13 @@ namespace MinecraftClient.Protocol.Handlers
                 //         login_phase,
                 //         innerException.GetType()),
                 //     innerException);
+                Console.WriteLine(
+                    "Failed to process incoming packet of type {0}. (PacketID: {1}, Protocol: {2}, LoginPhase: {3}, InnerException: {4}), Restart the client.",
+                    Protocol18PacketTypes.GetPacketIncomingType(packetID, protocolversion),
+                    packetID,
+                    protocolversion,
+                    login_phase,
+                    innerException.GetType());
                 McTcpClient.ReconnectionAttemptsLeft = 3;
                 Program.Restart(0);
                 return false;
