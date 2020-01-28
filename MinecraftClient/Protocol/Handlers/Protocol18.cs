@@ -688,7 +688,7 @@ namespace MinecraftClient.Protocol.Handlers
                     protocolversion,
                     login_phase,
                     innerException.GetType());
-                McTcpClient.ReconnectionAttemptsLeft = 3;
+                McTcpClient.ReconnectionAttemptsLeft = 1;
                 Program.Restart(0);
                 return false;
             }

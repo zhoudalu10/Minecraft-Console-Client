@@ -94,7 +94,8 @@ namespace MinecraftClient.ChatBots
                     ContinuousUseFishrod++;
                     if (ContinuousUseFishrod > 10)
                     {
-                        throw new Exception("Server is too busy or there is no water to fish, exit.");
+                        LogToConsole("Server is too busy or there is no water to fish, restart the client.");
+                        Relogin();
                     }
                 }
             }
@@ -120,7 +121,7 @@ namespace MinecraftClient.ChatBots
             if (type == EntityTypeId)
             {
                 TimeSpan interval = DateTime.Now - LastTime;
-                if (interval.TotalMilliseconds <= 500)
+                if (interval.TotalMilliseconds <= 1000)
                 {
                     FishrowEntityId = entityId;
                     Fishing = true;

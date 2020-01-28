@@ -587,7 +587,8 @@ namespace MinecraftClient
         /// <param name="text">Log text to write</param>
         protected void LogToConsole(object text)
         {
-            ConsoleIO.WriteLogLine(String.Format("[{0}] {1}", this.GetType().Name, text));
+            ConsoleIO.WriteLogLine(String.Format("[{0}][{1}] {2}", DateTime.Now.ToLongTimeString(),
+                this.GetType().Name, text));
             string logfile = Settings.ExpandVars(Settings.chatbotLogFile);
 
             if (!String.IsNullOrEmpty(logfile))
