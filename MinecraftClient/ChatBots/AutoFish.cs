@@ -118,13 +118,16 @@ namespace MinecraftClient.ChatBots
 
         public override void OnSpawnEntity(int entityId, short type, Guid UUID, Mapping.Location location)
         {
-            if (type == EntityTypeId)
+            if (!Fishing)
             {
-                TimeSpan interval = DateTime.Now - LastTime;
-                if (interval.TotalMilliseconds <= 1000)
+                if (type == EntityTypeId)
                 {
-                    FishrowEntityId = entityId;
-                    Fishing = true;
+                    TimeSpan interval = DateTime.Now - LastTime;
+                    if (interval.TotalMilliseconds <= 500)
+                    {
+                        FishrowEntityId = entityId;
+                        Fishing = true;
+                    }
                 }
             }
 

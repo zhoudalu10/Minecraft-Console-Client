@@ -30,6 +30,7 @@ namespace MinecraftClient.ChatBots
             Timer.Enabled = false;
             Timer.Stop();
             Open = true;
+            TryCount = 0;
             if (Settings.AutoRelogin_Command.Length > 0)
             {
                 SendText(Settings.AutoRelogin_Command);
@@ -52,7 +53,7 @@ namespace MinecraftClient.ChatBots
         protected void TimerHandler(object source, System.Timers.ElapsedEventArgs e)
         {
             TryCount += 1;
-            if (Settings.AutoRelog_Retries != -1 && TryCount > Settings.AutoRelog_Retries)
+            if (Settings.AutoRelogin_Retries != -1 && TryCount > Settings.AutoRelogin_Retries)
             {
                 LogToConsole("After " + (TryCount - 1) + " attempts, not login, done.");
                 Timer.Enabled = false;
