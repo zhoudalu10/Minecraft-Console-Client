@@ -92,10 +92,10 @@ namespace MinecraftClient.ChatBots
                 {
                     UseFishRod();
                     ContinuousUseFishrod++;
-                    if (ContinuousUseFishrod > 10)
+                    if (ContinuousUseFishrod > 15)
                     {
-                        LogToConsole("Server is too busy or there is no water to fish, restart the client.");
-                        Relogin();
+                        LogToConsole("Server is too busy or there is no water to fish, exit the client.");
+                        DisconnectAndExit();
                     }
                 }
             }
