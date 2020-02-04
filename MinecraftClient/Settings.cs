@@ -172,6 +172,7 @@ namespace MinecraftClient
         public static string AutoFish_Message = "";
         public static int AutoFish_Amount = 0;
         public static string AutoFish_Command = "";
+        public static int AutoFish_Mode = 0;
 
         //Custom app variables and Minecraft accounts
         private static readonly Dictionary<string, object> AppVars = new Dictionary<string, object>();
@@ -856,6 +857,21 @@ namespace MinecraftClient
                                                 case "command":
                                                     AutoFish_Command = argValue;
                                                     break;
+                                                case "mode":
+                                                    switch (argValue.ToLower())
+                                                    {
+                                                        case "default":
+                                                            AutoFish_Mode = 0;
+                                                            break;
+                                                        case "potatoyw":
+                                                            AutoFish_Mode = 1;
+                                                            break;
+                                                        default:
+                                                            AutoFish_Mode = 0;
+                                                            break;
+                                                    }
+
+                                                    break;
                                             }
 
                                             break;
@@ -1055,6 +1071,7 @@ namespace MinecraftClient
                                                       + "message=" + AutoFish_Message + "\r\n"
                                                       + "amount=" + AutoFish_Amount + "\r\n"
                                                       + "command=" + AutoFish_Command + "\r\n"
+                                                      + "mode=" + autoFishMode2string(AutoFish_Mode) + "\r\n"
                 , Encoding.UTF8);
         }
 
@@ -1139,6 +1156,19 @@ namespace MinecraftClient
                     return "commands";
                 default:
                     return "disabled";
+            }
+        }
+
+        public static string autoFishMode2string(int mode)
+        {
+            switch (mode)
+            {
+                case 0:
+                    return "default";
+                case 1:
+                    return "potatoyw";
+                default:
+                    return "default";
             }
         }
 

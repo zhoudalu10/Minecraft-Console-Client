@@ -21,6 +21,7 @@ namespace MinecraftClient.ChatBots
         private int EntityTypeId;
         private bool CanFishFlag;
         private int ContinuousUseFishrod = 0;
+        private int SpawnEntityDelay = 500;
 
         public AutoFish()
         {
@@ -29,6 +30,12 @@ namespace MinecraftClient.ChatBots
 
         public override void Initialize()
         {
+            if (Settings.AutoFish_Mode == 1)
+            {
+                SpawnEntityDelay = 3000;
+                Settings.AutoFish_Delay = 3;
+            }
+
             base.Initialize();
         }
 
@@ -123,7 +130,7 @@ namespace MinecraftClient.ChatBots
                 if (type == EntityTypeId)
                 {
                     TimeSpan interval = DateTime.Now - LastTime;
-                    if (interval.TotalMilliseconds <= 500)
+                    if (interval.TotalMilliseconds <= SpawnEntityDelay)
                     {
                         FishrowEntityId = entityId;
                         Fishing = true;
