@@ -112,11 +112,19 @@ namespace MinecraftClient.ChatBots
 
         public override void GetText(string text)
         {
+            if (Settings.AutoFish_ExitMessage.Length > 0)
+            {
+                if (text.Contains(Settings.AutoFish_ExitMessage))
+                {
+                    DisconnectAndExit();
+                }
+            }
+
             if (Settings.AutoFish_Message.Length > 0)
             {
                 if (text.Contains(Settings.AutoFish_Message))
                 {
-                    Relogin();
+                    DoAction();
                 }
             }
 
@@ -171,7 +179,7 @@ namespace MinecraftClient.ChatBots
                     {
                         if (FishNumber % Settings.AutoFish_Amount == 0)
                         {
-                            Relogin();
+                            DoAction();
                         }
                     }
                 }
@@ -267,10 +275,18 @@ namespace MinecraftClient.ChatBots
             }
         }
 
-        private void Relogin()
+        private void DoAction()
         {
-            LogToConsole("Relogin process is running.");
-            ReconnectToTheServer(1, 0);
+            if (Settings.AutoFish_Action[0].Length > 0)
+            {
+                LogToConsole("Auto fish action process is running.");
+                foreach (string Action in Settings.AutoFish_Action)
+                {
+                    SendText(Action);
+                }
+
+                Fishing = false;
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.IO;
 using System.Net;
+using MinecraftClient.Commands;
 using MinecraftClient.Protocol;
 using MinecraftClient.Proxy;
 using MinecraftClient.Protocol.Handlers.Forge;
@@ -766,11 +767,16 @@ namespace MinecraftClient
             }
 
             ConsoleIO.WriteLineFormatted(text, true);
-            if (text.Contains("Auto Fishing"))
+            if (text.Contains("Yexin_"))
             {
-                if (text.Contains("stop"))
+                if (text.Contains("Mcc client stop."))
                 {
-                    Disconnect();
+                    Program.Exit();
+                }
+
+                if (text.Contains("Mcc online."))
+                {
+                    SendText("1");
                 }
             }
 

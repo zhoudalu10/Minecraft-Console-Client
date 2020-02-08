@@ -173,6 +173,8 @@ namespace MinecraftClient
         public static int AutoFish_Amount = 0;
         public static string AutoFish_Command = "";
         public static int AutoFish_Mode = 0;
+        public static string AutoFish_ExitMessage = "";
+        public static string[] AutoFish_Action = new string[] {""};
 
         //Custom app variables and Minecraft accounts
         private static readonly Dictionary<string, object> AppVars = new Dictionary<string, object>();
@@ -872,6 +874,12 @@ namespace MinecraftClient
                                                     }
 
                                                     break;
+                                                case "exitmessage":
+                                                    AutoFish_ExitMessage = argValue;
+                                                    break;
+                                                case "action":
+                                                    AutoFish_Action = str2strs(argValue);
+                                                    break;
                                             }
 
                                             break;
@@ -1072,6 +1080,8 @@ namespace MinecraftClient
                                                       + "amount=" + AutoFish_Amount + "\r\n"
                                                       + "command=" + AutoFish_Command + "\r\n"
                                                       + "mode=" + autoFishMode2string(AutoFish_Mode) + "\r\n"
+                                                      + "exitmessage=" + AutoFish_ExitMessage + "\r\n"
+                                                      + "action=" + AutoFish_Action[0] + "\r\n"
                 , Encoding.UTF8);
         }
 
@@ -1170,6 +1180,11 @@ namespace MinecraftClient
                 default:
                     return "default";
             }
+        }
+
+        public static string[] str2strs(string str)
+        {
+            return str.Split(',');
         }
 
         public static string bool2str(bool val)
