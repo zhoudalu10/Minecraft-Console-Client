@@ -159,7 +159,10 @@ namespace MinecraftClient
         public static bool AutoRespond_Enabled = false;
         public static string AutoRespond_Matches = "matches.ini";
 
-        public static bool AutoRespawn_Enabled = false;
+        public static bool AutoExit_Enabled = false;
+        public static string AutoExit_Message = "";
+        public static int AutoExit_Health = 0;
+
 
         public static bool AutoRelogin_Enabled = false;
         public static int AutoRelogin_Delay = 30;
@@ -173,7 +176,6 @@ namespace MinecraftClient
         public static int AutoFish_Amount = 0;
         public static string AutoFish_Command = "";
         public static int AutoFish_Mode = 0;
-        public static string AutoFish_ExitMessage = "";
         public static string[] AutoFish_Action = new string[] {""};
 
         //Custom app variables and Minecraft accounts
@@ -201,7 +203,7 @@ namespace MinecraftClient
             RemoteControl,
             ChatFormat,
             AutoRespond,
-            AutoRespawn,
+            AutoExit,
             AutoRelogin,
             AutoFish
         };
@@ -272,8 +274,8 @@ namespace MinecraftClient
                                     case "chatformat":
                                         pMode = ParseMode.ChatFormat;
                                         break;
-                                    case "autorespawn":
-                                        pMode = ParseMode.AutoRespawn;
+                                    case "autoexit":
+                                        pMode = ParseMode.AutoExit;
                                         break;
                                     case "autorelogin":
                                         pMode = ParseMode.AutoRelogin;
@@ -811,11 +813,17 @@ namespace MinecraftClient
                                             }
 
                                             break;
-                                        case ParseMode.AutoRespawn:
+                                        case ParseMode.AutoExit:
                                             switch (argName.ToLower())
                                             {
                                                 case "enabled":
-                                                    AutoRespawn_Enabled = str2bool(argValue);
+                                                    AutoExit_Enabled = str2bool(argValue);
+                                                    break;
+                                                case "message":
+                                                    AutoExit_Message = argValue;
+                                                    break;
+                                                case "health":
+                                                    AutoExit_Health = str2int(argValue);
                                                     break;
                                             }
 
@@ -873,9 +881,6 @@ namespace MinecraftClient
                                                             break;
                                                     }
 
-                                                    break;
-                                                case "exitmessage":
-                                                    AutoFish_ExitMessage = argValue;
                                                     break;
                                                 case "action":
                                                     AutoFish_Action = str2strs(argValue);
@@ -1063,8 +1068,10 @@ namespace MinecraftClient
                                                       + "enabled=" + bool2str(AutoRespond_Enabled) + "\r\n"
                                                       + "matchesfile=" + AutoRespond_Matches + "\r\n"
                                                       + "\r\n"
-                                                      + "[AutoRespawn]\r\n"
-                                                      + "enabled=" + bool2str(AutoRespawn_Enabled) + "\r\n"
+                                                      + "[AutoExit]\r\n"
+                                                      + "enabled=" + bool2str(AutoExit_Enabled) + "\r\n"
+                                                      + "message=" + AutoExit_Message + "\r\n"
+                                                      + "health=" + AutoExit_Health + "\r\n"
                                                       + "\r\n"
                                                       + "[AutoRelogin]\r\n"
                                                       + "enabled=" + bool2str(AutoRelogin_Enabled) + "\r\n"
@@ -1080,7 +1087,6 @@ namespace MinecraftClient
                                                       + "amount=" + AutoFish_Amount + "\r\n"
                                                       + "command=" + AutoFish_Command + "\r\n"
                                                       + "mode=" + autoFishMode2string(AutoFish_Mode) + "\r\n"
-                                                      + "exitmessage=" + AutoFish_ExitMessage + "\r\n"
                                                       + "action=" + AutoFish_Action[0] + "\r\n"
                 , Encoding.UTF8);
         }

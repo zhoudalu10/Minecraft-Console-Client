@@ -25,7 +25,7 @@ namespace MinecraftClient.ChatBots
 
         public AutoFish()
         {
-            LogToConsole("AutoFish is open and load.");
+            LogToConsole("This is open and load.");
         }
 
         public override void Initialize()
@@ -112,14 +112,6 @@ namespace MinecraftClient.ChatBots
 
         public override void GetText(string text)
         {
-            if (Settings.AutoFish_ExitMessage.Length > 0)
-            {
-                if (text.Contains(Settings.AutoFish_ExitMessage))
-                {
-                    DisconnectAndExit();
-                }
-            }
-
             if (Settings.AutoFish_Message.Length > 0)
             {
                 if (text.Contains(Settings.AutoFish_Message))

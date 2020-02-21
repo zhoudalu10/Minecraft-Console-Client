@@ -209,9 +209,9 @@ namespace MinecraftClient
                         BotLoad(new ChatBots.AutoRespond(Settings.AutoRespond_Matches));
                     }
 
-                    if (Settings.AutoRespawn_Enabled)
+                    if (Settings.AutoExit_Enabled)
                     {
-                        BotLoad(new ChatBots.AutoRespawn());
+                        BotLoad(new ChatBots.AutoExit());
                     }
 
                     if (Settings.AutoRelogin_Enabled)

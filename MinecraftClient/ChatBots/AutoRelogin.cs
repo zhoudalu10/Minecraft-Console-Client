@@ -13,16 +13,16 @@ namespace MinecraftClient.ChatBots
 
         public AutoRelogin()
         {
+            LogToConsole("This is open and load.");
+        }
+
+        public override void Initialize()
+        {
             Timer.Enabled = false;
             Timer.Stop();
             Timer.Interval = Settings.AutoRelogin_Delay * 1000;
             Timer.AutoReset = true;
             Timer.Elapsed += new System.Timers.ElapsedEventHandler(TimerHandler);
-            LogToConsole("AutoRelogin is open and load.");
-        }
-
-        public override void Initialize()
-        {
         }
 
         public override void AfterGameJoined()
