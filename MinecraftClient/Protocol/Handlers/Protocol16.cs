@@ -8,12 +8,14 @@ using MinecraftClient.Crypto;
 using MinecraftClient.Proxy;
 using System.Security.Cryptography;
 using MinecraftClient.Mapping;
+using MinecraftClient.Inventory;
 
 namespace MinecraftClient.Protocol.Handlers
 {
     /// <summary>
     /// Implementation for Minecraft 1.4.X, 1.5.X, 1.6.X Protocols
     /// </summary>
+
     class Protocol16Handler : IMinecraftCom
     {
         IMinecraftComHandler handler;
@@ -39,6 +41,18 @@ namespace MinecraftClient.Protocol.Handlers
                 ConsoleIO.WriteLineFormatted("§8Terrain & Movements currently not handled for that MC version.");
                 Handler.SetTerrainEnabled(false);
             }
+
+            if (handler.GetInventoryEnabled())
+            {
+                ConsoleIO.WriteLineFormatted("§8Inventories are currently not handled for that MC version.");
+                handler.SetInventoryEnabled(false);
+            }
+
+            if (handler.GetEntityHandlingEnabled())
+            {
+                ConsoleIO.WriteLineFormatted("§8Entities are currently not handled for that MC version.");
+                handler.SetEntityHandlingEnabled(false);
+            }
         }
 
         private Protocol16Handler(TcpClient Client)
@@ -53,17 +67,12 @@ namespace MinecraftClient.Protocol.Handlers
                 do
                 {
                     Thread.Sleep(100);
-                } while (Update());
+                }
+                while (Update());
             }
-            catch (System.IO.IOException)
-            {
-            }
-            catch (SocketException)
-            {
-            }
-            catch (ObjectDisposedException)
-            {
-            }
+            catch (System.IO.IOException) { }
+            catch (SocketException) { }
+            catch (ObjectDisposedException) { }
 
             handler.OnConnectionLost(ChatBot.DisconnectReason.ConnectionLost, "");
         }
@@ -77,7 +86,6 @@ namespace MinecraftClient.Protocol.Handlers
                 byte id = readNextByte();
                 connection_ok = processPacket(id);
             }
-
             return connection_ok;
         }
 
@@ -86,382 +94,103 @@ namespace MinecraftClient.Protocol.Handlers
             int nbr = 0;
             switch (id)
             {
-                case 0x00:
-                    byte[] keepalive = new byte[5] {0, 0, 0, 0, 0};
+                case 0x00: byte[] keepalive = new byte[5] { 0, 0, 0, 0, 0 };
                     Receive(keepalive, 1, 4, SocketFlags.None);
                     handler.OnServerKeepAlive();
-                    Send(keepalive);
-                    break;
-                case 0x01:
-                    readData(4);
-                    readNextString();
-                    readData(5);
-                    break;
-                case 0x02:
-                    readData(1);
-                    readNextString();
-                    readNextString();
-                    readData(4);
-                    break;
+                    Send(keepalive); break;
+                case 0x01: readData(4); readNextString(); readData(5); break;
+                case 0x02: readData(1); readNextString(); readNextString(); readData(4); break;
                 case 0x03:
                     string message = readNextString();
-                    handler.OnTextReceived(message, protocolversion >= 72);
-                    break;
-                case 0x04:
-                    readData(16);
-                    break;
-                case 0x05:
-                    readData(6);
-                    readNextItemSlot();
-                    break;
-                case 0x06:
-                    readData(12);
-                    break;
-                case 0x07:
-                    readData(9);
-                    break;
-                case 0x08:
-                    if (protocolversion >= 72)
-                    {
-                        readData(10);
-                    }
-                    else readData(8);
-
-                    break;
-                case 0x09:
-                    readData(8);
-                    readNextString();
-                    break;
-                case 0x0A:
-                    readData(1);
-                    break;
-                case 0x0B:
-                    readData(33);
-                    break;
-                case 0x0C:
-                    readData(9);
-                    break;
-                case 0x0D:
-                    readData(41);
-                    break;
-                case 0x0E:
-                    readData(11);
-                    break;
-                case 0x0F:
-                    readData(10);
-                    readNextItemSlot();
-                    readData(3);
-                    break;
-                case 0x10:
-                    readData(2);
-                    break;
-                case 0x11:
-                    readData(14);
-                    break;
-                case 0x12:
-                    readData(5);
-                    break;
-                case 0x13:
-                    if (protocolversion >= 72)
-                    {
-                        readData(9);
-                    }
-                    else readData(5);
-
-                    break;
-                case 0x14:
-                    readData(4);
-                    readNextString();
-                    readData(16);
-                    readNextEntityMetaData();
-                    break;
-                case 0x16:
-                    readData(8);
-                    break;
-                case 0x17:
-                    readData(19);
-                    readNextObjectData();
-                    break;
-                case 0x18:
-                    readData(26);
-                    readNextEntityMetaData();
-                    break;
-                case 0x19:
-                    readData(4);
-                    readNextString();
-                    readData(16);
-                    break;
-                case 0x1A:
-                    readData(18);
-                    break;
-                case 0x1B:
-                    if (protocolversion >= 72)
-                    {
-                        readData(10);
-                    }
-
-                    break;
-                case 0x1C:
-                    readData(10);
-                    break;
-                case 0x1D:
-                    nbr = (int) readNextByte();
-                    readData(nbr * 4);
-                    break;
-                case 0x1E:
-                    readData(4);
-                    break;
-                case 0x1F:
-                    readData(7);
-                    break;
-                case 0x20:
-                    readData(6);
-                    break;
-                case 0x21:
-                    readData(9);
-                    break;
-                case 0x22:
-                    readData(18);
-                    break;
-                case 0x23:
-                    readData(5);
-                    break;
-                case 0x26:
-                    readData(5);
-                    break;
-                case 0x27:
-                    if (protocolversion >= 72)
-                    {
-                        readData(9);
-                    }
-                    else readData(8);
-
-                    break;
-                case 0x28:
-                    readData(4);
-                    readNextEntityMetaData();
-                    break;
-                case 0x29:
-                    readData(8);
-                    break;
-                case 0x2A:
-                    readData(5);
-                    break;
-                case 0x2B:
-                    readData(8);
-                    break;
-                case 0x2C:
-                    if (protocolversion >= 72)
-                    {
-                        readNextEntityProperties(protocolversion);
-                    }
-
-                    break;
-                case 0x33:
-                    readData(13);
-                    nbr = readNextInt();
-                    readData(nbr);
-                    break;
-                case 0x34:
-                    readData(10);
-                    nbr = readNextInt();
-                    readData(nbr);
-                    break;
-                case 0x35:
-                    readData(12);
-                    break;
-                case 0x36:
-                    readData(14);
-                    break;
-                case 0x37:
-                    readData(17);
-                    break;
-                case 0x38:
-                    readNextChunkBulkData();
-                    break;
-                case 0x3C:
-                    readData(28);
-                    nbr = readNextInt();
-                    readData(3 * nbr);
-                    readData(12);
-                    break;
-                case 0x3D:
-                    readData(18);
-                    break;
-                case 0x3E:
-                    readNextString();
-                    readData(17);
-                    break;
-                case 0x3F:
-                    if (protocolversion > 51)
-                    {
-                        readNextString();
-                        readData(32);
-                    }
-
-                    break;
-                case 0x46:
-                    readData(2);
-                    break;
-                case 0x47:
-                    readData(17);
-                    break;
-                case 0x64:
-                    readNextWindowData(protocolversion);
-                    break;
-                case 0x65:
-                    readData(1);
-                    break;
-                case 0x66:
-                    readData(7);
-                    readNextItemSlot();
-                    break;
-                case 0x67:
-                    readData(3);
-                    readNextItemSlot();
-                    break;
-                case 0x68:
-                    readData(1);
-                    for (nbr = readNextShort(); nbr > 0; nbr--)
-                    {
-                        readNextItemSlot();
-                    }
-
-                    break;
-                case 0x69:
-                    readData(5);
-                    break;
-                case 0x6A:
-                    readData(4);
-                    break;
-                case 0x6B:
-                    readData(2);
-                    readNextItemSlot();
-                    break;
-                case 0x6C:
-                    readData(2);
-                    break;
-                case 0x82:
-                    readData(10);
-                    readNextString();
-                    readNextString();
-                    readNextString();
-                    readNextString();
-                    break;
-                case 0x83:
-                    readData(4);
-                    nbr = readNextShort();
-                    readData(nbr);
-                    break;
-                case 0x84:
-                    readData(11);
-                    nbr = readNextShort();
-                    if (nbr > 0)
-                    {
-                        readData(nbr);
-                    }
-
-                    break;
-                case 0x85:
-                    if (protocolversion >= 74)
-                    {
-                        readData(13);
-                    }
-
-                    break;
+                    handler.OnTextReceived(message, protocolversion >= 72); break;
+                case 0x04: readData(16); break;
+                case 0x05: readData(6); readNextItemSlot(); break;
+                case 0x06: readData(12); break;
+                case 0x07: readData(9); break;
+                case 0x08: if (protocolversion >= 72) { readData(10); } else readData(8); break;
+                case 0x09: readData(8); readNextString(); break;
+                case 0x0A: readData(1); break;
+                case 0x0B: readData(33); break;
+                case 0x0C: readData(9); break;
+                case 0x0D: readData(41); break;
+                case 0x0E: readData(11); break;
+                case 0x0F: readData(10); readNextItemSlot(); readData(3); break;
+                case 0x10: readData(2); break;
+                case 0x11: readData(14); break;
+                case 0x12: readData(5); break;
+                case 0x13: if (protocolversion >= 72) { readData(9); } else readData(5); break;
+                case 0x14: readData(4); readNextString(); readData(16); readNextEntityMetaData(); break;
+                case 0x16: readData(8); break;
+                case 0x17: readData(19); readNextObjectData(); break;
+                case 0x18: readData(26); readNextEntityMetaData(); break;
+                case 0x19: readData(4); readNextString(); readData(16); break;
+                case 0x1A: readData(18); break;
+                case 0x1B: if (protocolversion >= 72) { readData(10); } break;
+                case 0x1C: readData(10); break;
+                case 0x1D: nbr = (int)readNextByte(); readData(nbr * 4); break;
+                case 0x1E: readData(4); break;
+                case 0x1F: readData(7); break;
+                case 0x20: readData(6); break;
+                case 0x21: readData(9); break;
+                case 0x22: readData(18); break;
+                case 0x23: readData(5); break;
+                case 0x26: readData(5); break;
+                case 0x27: if (protocolversion >= 72) { readData(9); } else readData(8); break;
+                case 0x28: readData(4); readNextEntityMetaData(); break;
+                case 0x29: readData(8); break;
+                case 0x2A: readData(5); break;
+                case 0x2B: readData(8); break;
+                case 0x2C: if (protocolversion >= 72) { readNextEntityProperties(protocolversion); } break;
+                case 0x33: readData(13); nbr = readNextInt(); readData(nbr); break;
+                case 0x34: readData(10); nbr = readNextInt(); readData(nbr); break;
+                case 0x35: readData(12); break;
+                case 0x36: readData(14); break;
+                case 0x37: readData(17); break;
+                case 0x38: readNextChunkBulkData(); break;
+                case 0x3C: readData(28); nbr = readNextInt(); readData(3 * nbr); readData(12); break;
+                case 0x3D: readData(18); break;
+                case 0x3E: readNextString(); readData(17); break;
+                case 0x3F: if (protocolversion > 51) { readNextString(); readData(32); } break;
+                case 0x46: readData(2); break;
+                case 0x47: readData(17); break;
+                case 0x64: readNextWindowData(protocolversion); break;
+                case 0x65: readData(1); break;
+                case 0x66: readData(7); readNextItemSlot(); break;
+                case 0x67: readData(3); readNextItemSlot(); break;
+                case 0x68: readData(1); for (nbr = readNextShort(); nbr > 0; nbr--) { readNextItemSlot(); } break;
+                case 0x69: readData(5); break;
+                case 0x6A: readData(4); break;
+                case 0x6B: readData(2); readNextItemSlot(); break;
+                case 0x6C: readData(2); break;
+                case 0x82: readData(10); readNextString(); readNextString(); readNextString(); readNextString(); break;
+                case 0x83: readData(4); nbr = readNextShort(); readData(nbr); break;
+                case 0x84: readData(11); nbr = readNextShort(); if (nbr > 0) { readData(nbr); } break;
+                case 0x85: if (protocolversion >= 74) { readData(13); } break;
                 case 0xC8:
-                    if (readNextInt() == 2022)
-                    {
-                        ConsoleIO.WriteLineFormatted("§MCC: You are dead. Type /reco to respawn & reconnect.");
-                    }
-
-                    if (protocolversion >= 72)
-                    {
-                        readData(4);
-                    }
-                    else readData(1);
-
+                    if (readNextInt() == 2022) { ConsoleIO.WriteLogLine("You are dead. Type /respawn to respawn."); }
+                    if (protocolversion >= 72) { readData(4); } else readData(1);
                     break;
                 case 0xC9:
-                    string name = readNextString();
-                    bool online = readNextByte() != 0x00;
-                    readData(2);
+                    string name = readNextString(); bool online = readNextByte() != 0x00; readData(2);
                     Guid FakeUUID = new Guid(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(name)).Take(16).ToArray());
-                    if (online)
-                    {
-                        handler.OnPlayerJoin(FakeUUID, name);
-                    }
-                    else
-                    {
-                        handler.OnPlayerLeave(FakeUUID);
-                    }
-
+                    if (online) { handler.OnPlayerJoin(FakeUUID, name); } else { handler.OnPlayerLeave(FakeUUID); }
                     break;
-                case 0xCA:
-                    if (protocolversion >= 72)
-                    {
-                        readData(9);
-                    }
-                    else readData(3);
-
-                    break;
-                case 0xCB:
-                    autocomplete_result = readNextString();
-                    autocomplete_received = true;
-                    break;
-                case 0xCC:
-                    readNextString();
-                    readData(4);
-                    break;
-                case 0xCD:
-                    readData(1);
-                    break;
-                case 0xCE:
-                    if (protocolversion > 51)
-                    {
-                        readNextString();
-                        readNextString();
-                        readData(1);
-                    }
-
-                    break;
-                case 0xCF:
-                    if (protocolversion > 51)
-                    {
-                        readNextString();
-                        readData(1);
-                        readNextString();
-                    }
-
-                    readData(4);
-                    break;
-                case 0xD0:
-                    if (protocolversion > 51)
-                    {
-                        readData(1);
-                        readNextString();
-                    }
-
-                    break;
-                case 0xD1:
-                    if (protocolversion > 51)
-                    {
-                        readNextTeamData();
-                    }
-
-                    break;
-                case 0xFA:
-                    string channel = readNextString();
+                case 0xCA: if (protocolversion >= 72) { readData(9); } else readData(3); break;
+                case 0xCB: autocomplete_result = readNextString(); autocomplete_received = true; break;
+                case 0xCC: readNextString(); readData(4); break;
+                case 0xCD: readData(1); break;
+                case 0xCE: if (protocolversion > 51) { readNextString(); readNextString(); readData(1); } break;
+                case 0xCF: if (protocolversion > 51) { readNextString(); readData(1); readNextString(); } readData(4); break;
+                case 0xD0: if (protocolversion > 51) { readData(1); readNextString(); } break;
+                case 0xD1: if (protocolversion > 51) { readNextTeamData(); } break;
+                case 0xFA: string channel = readNextString();
                     byte[] payload = readNextByteArray();
                     handler.OnPluginChannelMessage(channel, payload);
                     break;
-                case 0xFF:
-                    string reason = readNextString();
-                    handler.OnConnectionLost(ChatBot.DisconnectReason.InGameKick, reason);
-                    break;
+                case 0xFF: string reason = readNextString();
+                    handler.OnConnectionLost(ChatBot.DisconnectReason.InGameKick, reason); break;
                 default: return false; //unknown packet!
             }
-
             return true; //packet has been successfully skipped
         }
 
@@ -482,9 +211,7 @@ namespace MinecraftClient.Protocol.Handlers
                     c.Close();
                 }
             }
-            catch
-            {
-            }
+            catch { }
         }
 
         private void readData(int offset)
@@ -496,15 +223,13 @@ namespace MinecraftClient.Protocol.Handlers
                     byte[] cache = new byte[offset];
                     Receive(cache, 0, offset, SocketFlags.None);
                 }
-                catch (OutOfMemoryException)
-                {
-                }
+                catch (OutOfMemoryException) { }
             }
         }
 
         private string readNextString()
         {
-            ushort length = (ushort) readNextShort();
+            ushort length = (ushort)readNextShort();
             if (length > 0)
             {
                 byte[] cache = new byte[length * 2];
@@ -556,10 +281,7 @@ namespace MinecraftClient.Protocol.Handlers
                 readData(2); //Item damage
                 short length = readNextShort();
                 //If length of optional NBT data > 0, read it
-                if (length > 0)
-                {
-                    readData(length);
-                }
+                if (length > 0) { readData(length); }
             }
         }
 
@@ -569,36 +291,18 @@ namespace MinecraftClient.Protocol.Handlers
             {
                 byte[] id = new byte[1];
                 Receive(id, 0, 1, SocketFlags.None);
-                if (id[0] == 0x7F)
-                {
-                    break;
-                }
-
+                if (id[0] == 0x7F) { break; }
                 int index = id[0] & 0x1F;
                 int type = id[0] >> 5;
                 switch (type)
                 {
-                    case 0:
-                        readData(1);
-                        break; //Byte
-                    case 1:
-                        readData(2);
-                        break; //Short
-                    case 2:
-                        readData(4);
-                        break; //Int
-                    case 3:
-                        readData(4);
-                        break; //Float
-                    case 4:
-                        readNextString();
-                        break; //String
-                    case 5:
-                        readNextItemSlot();
-                        break; //Slot
-                    case 6:
-                        readData(12);
-                        break; //Vector (3 Int)
+                    case 0: readData(1); break;        //Byte
+                    case 1: readData(2); break;        //Short
+                    case 2: readData(4); break;        //Int
+                    case 3: readData(4); break;        //Float
+                    case 4: readNextString(); break;   //String
+                    case 5: readNextItemSlot(); break; //Slot
+                    case 6: readData(12); break;       //Vector (3 Int)
                 }
             } while (true);
         }
@@ -606,10 +310,7 @@ namespace MinecraftClient.Protocol.Handlers
         private void readNextObjectData()
         {
             int id = readNextInt();
-            if (id != 0)
-            {
-                readData(6);
-            }
+            if (id != 0) { readData(6); }
         }
 
         private void readNextTeamData()
@@ -719,13 +420,13 @@ namespace MinecraftClient.Protocol.Handlers
             byte[] data = new byte[10 + (username.Length + host.Length) * 2];
 
             //packet id
-            data[0] = (byte) 2;
+            data[0] = (byte)2;
 
             //Protocol Version
-            data[1] = (byte) protocolversion;
+            data[1] = (byte)protocolversion;
 
             //short len
-            byte[] sh = BitConverter.GetBytes((short) username.Length);
+            byte[] sh = BitConverter.GetBytes((short)username.Length);
             Array.Reverse(sh);
             sh.CopyTo(data, 2);
 
@@ -734,7 +435,7 @@ namespace MinecraftClient.Protocol.Handlers
             bname.CopyTo(data, 4);
 
             //short len
-            sh = BitConverter.GetBytes((short) host.Length);
+            sh = BitConverter.GetBytes((short)host.Length);
             Array.Reverse(sh);
             sh.CopyTo(data, 4 + (username.Length * 2));
 
@@ -756,7 +457,6 @@ namespace MinecraftClient.Protocol.Handlers
                 processPacket(pid[0]);
                 Receive(pid, 0, 1, SocketFlags.None);
             }
-
             if (pid[0] == 0xFD)
             {
                 string serverID = readNextString();
@@ -773,11 +473,9 @@ namespace MinecraftClient.Protocol.Handlers
             else return false;
         }
 
-        private bool StartEncryption(string uuid, string username, string sessionID, byte[] token, string serverIDhash,
-            byte[] serverKey)
+        private bool StartEncryption(string uuid, string username, string sessionID, byte[] token, string serverIDhash, byte[] serverKey)
         {
-            System.Security.Cryptography.RSACryptoServiceProvider RSAService =
-                CryptoHandler.DecodeRSAPublicKey(serverKey);
+            System.Security.Cryptography.RSACryptoServiceProvider RSAService = CryptoHandler.DecodeRSAPublicKey(serverKey);
             byte[] secretKey = CryptoHandler.GenerateAESPrivateKey();
 
             if (Settings.DebugMessages)
@@ -786,8 +484,7 @@ namespace MinecraftClient.Protocol.Handlers
             if (serverIDhash != "-")
             {
                 Console.WriteLine("Checking Session...");
-                if (!ProtocolHandler.SessionCheck(uuid, sessionID,
-                    CryptoHandler.getServerHash(serverIDhash, serverKey, secretKey)))
+                if (!ProtocolHandler.SessionCheck(uuid, sessionID, CryptoHandler.getServerHash(serverIDhash, serverKey, secretKey)))
                 {
                     return false;
                 }
@@ -796,19 +493,19 @@ namespace MinecraftClient.Protocol.Handlers
             //Encrypt the data
             byte[] key_enc = RSAService.Encrypt(secretKey, false);
             byte[] token_enc = RSAService.Encrypt(token, false);
-            byte[] keylen = BitConverter.GetBytes((short) key_enc.Length);
-            byte[] tokenlen = BitConverter.GetBytes((short) token_enc.Length);
+            byte[] keylen = BitConverter.GetBytes((short)key_enc.Length);
+            byte[] tokenlen = BitConverter.GetBytes((short)token_enc.Length);
 
             Array.Reverse(keylen);
             Array.Reverse(tokenlen);
 
             //Building the packet
-            byte[] data = new byte[5 + (short) key_enc.Length + (short) token_enc.Length];
+            byte[] data = new byte[5 + (short)key_enc.Length + (short)token_enc.Length];
             data[0] = 0xFC;
             keylen.CopyTo(data, 1);
             key_enc.CopyTo(data, 3);
-            tokenlen.CopyTo(data, 3 + (short) key_enc.Length);
-            token_enc.CopyTo(data, 5 + (short) key_enc.Length);
+            tokenlen.CopyTo(data, 3 + (short)key_enc.Length);
+            token_enc.CopyTo(data, 5 + (short)key_enc.Length);
 
             //Send it back
             Send(data);
@@ -828,10 +525,9 @@ namespace MinecraftClient.Protocol.Handlers
 
         public bool Login()
         {
-            if (Handshake(handler.GetUserUUID(), handler.GetUsername(), handler.GetSessionID(), handler.GetServerHost(),
-                handler.GetServerPort()))
+            if (Handshake(handler.GetUserUUID(), handler.GetUsername(), handler.GetSessionID(), handler.GetServerHost(), handler.GetServerPort()))
             {
-                Send(new byte[] {0xCD, 0});
+                Send(new byte[] { 0xCD, 0 });
                 try
                 {
                     byte[] pid = new byte[1];
@@ -845,16 +541,13 @@ namespace MinecraftClient.Protocol.Handlers
                                 processPacket(pid[0]);
                                 Receive(pid, 0, 1, SocketFlags.None);
                             }
-
-                            if (pid[0] == (byte) 1)
+                            if (pid[0] == (byte)1)
                             {
-                                readData(4);
-                                readNextString();
-                                readData(5);
+                                readData(4); readNextString(); readData(5);
                                 StartUpdating();
                                 return true; //The Server accepted the request
                             }
-                            else if (pid[0] == (byte) 0xFF)
+                            else if (pid[0] == (byte)0xFF)
                             {
                                 string reason = readNextString();
                                 handler.OnConnectionLost(ChatBot.DisconnectReason.LoginRejected, reason);
@@ -873,7 +566,6 @@ namespace MinecraftClient.Protocol.Handlers
                     handler.OnConnectionLost(ChatBot.DisconnectReason.ConnectionLost, "");
                     return false;
                 }
-
                 return false; //Login was unsuccessful (received a kick...)
             }
             else return false;
@@ -886,10 +578,10 @@ namespace MinecraftClient.Protocol.Handlers
             try
             {
                 byte[] reason = new byte[3 + (message.Length * 2)];
-                reason[0] = (byte) 0xff;
+                reason[0] = (byte)0xff;
 
                 byte[] msglen;
-                msglen = BitConverter.GetBytes((short) message.Length);
+                msglen = BitConverter.GetBytes((short)message.Length);
                 Array.Reverse(msglen);
                 msglen.CopyTo(reason, 1);
 
@@ -902,12 +594,8 @@ namespace MinecraftClient.Protocol.Handlers
 
                 Send(reason);
             }
-            catch (SocketException)
-            {
-            }
-            catch (System.IO.IOException)
-            {
-            }
+            catch (SocketException) { }
+            catch (System.IO.IOException) { }
         }
 
         public int GetMaxChatMessageLength()
@@ -923,10 +611,10 @@ namespace MinecraftClient.Protocol.Handlers
             try
             {
                 byte[] chat = new byte[3 + (message.Length * 2)];
-                chat[0] = (byte) 3;
+                chat[0] = (byte)3;
 
                 byte[] msglen;
-                msglen = BitConverter.GetBytes((short) message.Length);
+                msglen = BitConverter.GetBytes((short)message.Length);
                 Array.Reverse(msglen);
                 msglen.CopyTo(chat, 1);
 
@@ -937,27 +625,18 @@ namespace MinecraftClient.Protocol.Handlers
                 Send(chat);
                 return true;
             }
-            catch (SocketException)
-            {
-                return false;
-            }
-            catch (System.IO.IOException)
-            {
-                return false;
-            }
+            catch (SocketException) { return false; }
+            catch (System.IO.IOException) { return false; }
         }
 
         public bool SendRespawnPacket()
         {
             try
             {
-                Send(new byte[] {0xCD, 1});
+                Send(new byte[] { 0xCD, 1 });
                 return true;
             }
-            catch (SocketException)
-            {
-                return false;
-            }
+            catch (SocketException) { return false; }
         }
 
         public bool SendBrandInfo(string brandInfo)
@@ -965,13 +644,58 @@ namespace MinecraftClient.Protocol.Handlers
             return false; //Only supported since MC 1.7
         }
 
-        public bool SendClientSettings(string language, byte viewDistance, byte difficulty, byte chatMode,
-            bool chatColors, byte skinParts, byte mainHand)
+        public bool SendClientSettings(string language, byte viewDistance, byte difficulty, byte chatMode, bool chatColors, byte skinParts, byte mainHand)
         {
             return false; //Currently not implemented
         }
 
         public bool SendLocationUpdate(Location location, bool onGround, float? yaw, float? pitch)
+        {
+            return false; //Currently not implemented
+        }
+
+        public bool SendInteractEntity(int EntityID, int type)
+        {
+            return false; //Currently not implemented
+        }
+
+        public bool SendInteractEntity(int EntityID, int type, float X, float Y, float Z, int hand)
+        {
+            return false; //Currently not implemented
+        }
+
+        public bool SendInteractEntity(int EntityID, int type, float X, float Y, float Z)
+        {
+            return false; //Currently not implemented
+        }
+
+        public bool SendUseItem(int hand)
+        {
+            return false; //Currently not implemented
+        }
+
+        public bool SendClickWindow(int windowId, int slotId, int button, int mode ,Item item)
+        {
+            return false; //Currently not implemented
+        }
+
+        public bool SendCloseWindow(int windowId)
+        {
+            return false; //Currently not implemented
+        }
+
+        public bool SendPlayerBlockPlacement(int hand, Location location, int face, float CursorX, float CursorY, float CursorZ, bool insideBlock)
+        {
+            return false; //Currently not implemented
+        }
+
+        public bool SendPlayerDigging(int status, Location location, int face, int time)
+        {
+            return false; //Currently not implemented
+        }
+
+
+        public bool SendHeldItemChange(short slot)
         {
             return false; //Currently not implemented
         }
@@ -983,43 +707,21 @@ namespace MinecraftClient.Protocol.Handlers
         /// <param name="data">packet Data</param>
         public bool SendPluginChannelPacket(string channel, byte[] data)
         {
-            try
-            {
-                byte[] channelLength = BitConverter.GetBytes((short) channel.Length);
+            try {
+                byte[] channelLength = BitConverter.GetBytes((short)channel.Length);
                 Array.Reverse(channelLength);
 
                 byte[] channelData = Encoding.BigEndianUnicode.GetBytes(channel);
 
-                byte[] dataLength = BitConverter.GetBytes((short) data.Length);
+                byte[] dataLength = BitConverter.GetBytes((short)data.Length);
                 Array.Reverse(dataLength);
 
-                Send(concatBytes(new byte[] {0xFA}, channelLength, channelData, dataLength, data));
+                Send(concatBytes(new byte[] { 0xFA }, channelLength, channelData, dataLength, data));
 
                 return true;
             }
-            catch (SocketException)
-            {
-                return false;
-            }
-            catch (System.IO.IOException)
-            {
-                return false;
-            }
-        }
-
-        public bool SendHeldItemSlot(short slotId = 0)
-        {
-            return false;
-        }
-
-        public bool SendUseItem(int hand = 0)
-        {
-            return false;
-        }
-
-        public int GetProtocolVersion()
-        {
-            return protocolversion;
+            catch (SocketException) { return false; }
+            catch (System.IO.IOException) { return false; }
         }
 
         IEnumerable<string> IAutoComplete.AutoComplete(string BehindCursor)
@@ -1029,9 +731,8 @@ namespace MinecraftClient.Protocol.Handlers
 
             byte[] autocomplete = new byte[3 + (BehindCursor.Length * 2)];
             autocomplete[0] = 0xCB;
-            byte[] msglen = BitConverter.GetBytes((short) BehindCursor.Length);
-            Array.Reverse(msglen);
-            msglen.CopyTo(autocomplete, 1);
+            byte[] msglen = BitConverter.GetBytes((short)BehindCursor.Length);
+            Array.Reverse(msglen); msglen.CopyTo(autocomplete, 1);
             byte[] msg = Encoding.BigEndianUnicode.GetBytes(BehindCursor);
             msg.CopyTo(autocomplete, 3);
 
@@ -1040,15 +741,10 @@ namespace MinecraftClient.Protocol.Handlers
             Send(autocomplete);
 
             int wait_left = 50; //do not wait more than 5 seconds (50 * 100 ms)
-            while (wait_left > 0 && !autocomplete_received)
-            {
-                System.Threading.Thread.Sleep(100);
-                wait_left--;
-            }
-
+            while (wait_left > 0 && !autocomplete_received) { System.Threading.Thread.Sleep(100); wait_left--; }
             if (!String.IsNullOrEmpty(autocomplete_result) && autocomplete_received)
-                ConsoleIO.WriteLineFormatted("§8" + autocomplete_result.Replace((char) 0x00, ' '), false);
-            return autocomplete_result.Split((char) 0x00);
+                ConsoleIO.WriteLineFormatted("§8" + autocomplete_result.Replace((char)0x00, ' '), false);
+            return autocomplete_result.Split((char)0x00);
         }
 
         private static byte[] concatBytes(params byte[][] bytes)
@@ -1066,7 +762,7 @@ namespace MinecraftClient.Protocol.Handlers
                 string version = "";
                 TcpClient tcp = ProxyHandler.newTcpClient(host, port);
                 tcp.ReceiveTimeout = 5000; //MC 1.7.2+ SpigotMC servers won't respond, so we need a reasonable timeout.
-                byte[] ping = new byte[2] {0xfe, 0x01};
+                byte[] ping = new byte[2] { 0xfe, 0x01 };
                 tcp.Client.Send(ping, SocketFlags.None);
 
                 tcp.Client.Receive(ping, 0, 1, SocketFlags.None);
@@ -1076,8 +772,8 @@ namespace MinecraftClient.Protocol.Handlers
                     string result = ComTmp.readNextString();
                     if (result.Length > 2 && result[0] == '§' && result[1] == '1')
                     {
-                        string[] tmp = result.Split((char) 0x00);
-                        protocolversion = (byte) Int16.Parse(tmp[1]);
+                        string[] tmp = result.Split((char)0x00);
+                        protocolversion = (byte)Int16.Parse(tmp[1]);
                         version = tmp[2];
 
                         if (protocolversion == 127) //MC 1.7.2+
@@ -1085,20 +781,15 @@ namespace MinecraftClient.Protocol.Handlers
                     }
                     else
                     {
-                        protocolversion = (byte) 39;
+                        protocolversion = (byte)39;
                         version = "B1.8.1 - 1.3.2";
                     }
-
-                    ConsoleIO.WriteLineFormatted("§8Server version : MC " + version + " (protocol v" + protocolversion +
-                                                 ").");
+                    ConsoleIO.WriteLineFormatted("§8Server version : MC " + version + " (protocol v" + protocolversion + ").");
                     return true;
                 }
                 else return false;
             }
-            catch
-            {
-                return false;
-            }
+            catch { return false; }
         }
     }
 }

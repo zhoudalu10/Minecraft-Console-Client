@@ -31,11 +31,18 @@ namespace MinecraftClient.Protocol.Handlers
         WindowItems,
         SetSlot,
         SpawnEntity,
+        SpawnLivingEntity,
+        SpawnPlayer,
+        DestroyEntities,
+        SetCooldown,
+        EntityPosition,
+        EntityPositionAndRotation,
+        EntityProperties,
+        TimeUpdate,
         EntityTeleport,
-        EntityMoveLook,
-        EntityDestroy,
-        HeldItemSlot,
+        EntityStatus,
         UpdateHealth,
+        HeldItemChange,
         UnknownPacket
     }
 }

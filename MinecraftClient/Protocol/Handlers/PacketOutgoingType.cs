@@ -20,7 +20,12 @@ namespace MinecraftClient.Protocol.Handlers
         PlayerPosition,
         PlayerPositionAndLook,
         TeleportConfirm,
+        HeldItemChange,
+        InteractEntity,
         UseItem,
-        HeldItemSlot
+        ClickWindow,
+        CloseWindow,
+        PlayerBlockPlacement,
+        PlayerDigging
     }
 }

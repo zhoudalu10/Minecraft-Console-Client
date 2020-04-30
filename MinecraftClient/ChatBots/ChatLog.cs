@@ -9,16 +9,10 @@ namespace MinecraftClient.ChatBots
     /// <summary>
     /// This bot saves the received messages in a text file.
     /// </summary>
+
     public class ChatLog : ChatBot
     {
-        public enum MessageFilter
-        {
-            AllText,
-            AllMessages,
-            OnlyChat,
-            OnlyWhispers
-        };
-
+        public enum MessageFilter { AllText, AllMessages, OnlyChat, OnlyWhispers };
         private bool dateandtime;
         private bool saveOther = true;
         private bool saveChat = true;
@@ -31,6 +25,7 @@ namespace MinecraftClient.ChatBots
         /// <param name="file">The file to save the log in</param>
         /// <param name="filter">The kind of messages to save</param>
         /// <param name="AddDateAndTime">Add a date and time before each message</param>
+
         public ChatLog(string file, MessageFilter filter, bool AddDateAndTime)
         {
             dateandtime = AddDateAndTime;
@@ -58,7 +53,6 @@ namespace MinecraftClient.ChatBots
                     saveChat = false;
                     break;
             }
-
             if (String.IsNullOrEmpty(file) || file.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
             {
                 LogToConsole("Path '" + file + "' contains invalid characters.");
@@ -75,21 +69,6 @@ namespace MinecraftClient.ChatBots
                 case "chat": return MessageFilter.OnlyChat;
                 case "private": return MessageFilter.OnlyWhispers;
                 default: return MessageFilter.AllText;
-            }
-        }
-
-        public static string filter2str(MessageFilter filter)
-        {
-            switch (filter)
-            {
-                case MessageFilter.AllMessages:
-                    return "messages";
-                case MessageFilter.OnlyChat:
-                    return "chat";
-                case MessageFilter.OnlyWhispers:
-                    return "private";
-                default:
-                    return "all";
             }
         }
 

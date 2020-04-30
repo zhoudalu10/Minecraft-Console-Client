@@ -536,7 +536,7 @@ namespace MinecraftClient.Mapping
                 case Material.Fire:
                 case Material.Cactus:
                 case Material.Lava:
-                case Material.MagmaBlock:
+                //case Material.MagmaBlock:
                 case Material.Campfire:
                     return true;
                 default:
